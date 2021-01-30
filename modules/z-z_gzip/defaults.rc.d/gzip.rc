@@ -1,0 +1,2 @@
+# gzip module configuration
+gzip__compression='' # [1-9] or empty - disabled

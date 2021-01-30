@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+# gzip wrapper module
+
+# defaults variables
+. "${0%/*}/defaults.rc.d/gzip.rc"
+
+# variables
+. "${SSG__lib}/import-defaults.rc"
+
+if [ "${gzip__compression}" = '' ]; then
+	echo 'Gzip compression is disabled in settings'
+else
+	find ${SSG__generated} -name '*.html' -or -name '*.css' -or -name '*.js' | while read file; do
+		echo "Zipping $(echo -n "${file}" | sed 's\'"${SSG__generated}"'\\g')"
+		gzip "-${gzip__compression}" "${file}"
+	done
+fi
+
+exit 0

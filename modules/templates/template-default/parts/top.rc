@@ -1,0 +1,50 @@
+# default variables
+[ "${template__html_title}" = '' ] && template__html_title="${template__default_template__html_title}"
+
+# html header
+cat << EOF
+<!DOCTYPE html>
+<html lang="${defaults__html_lang}">
+	<head>
+		<title>${template__html_title}</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/assets/${templateName}.css">
+		<script src="${defaults__url_prefix}/assets/${templateName}.js"></script>
+EOF
+
+# user defined headers
+[ -e "${SSG__database}/templates/html-headers.rc" ] && . "${SSG__database}/templates/html-headers.rc"
+
+# additional heraders
+[ ! "${template__html_headers}" = '' ] && echo "${template__html_headers}"
+
+# header end
+cat << EOF
+	</head>
+	<body>
+EOF
+
+# content header
+if [ -e "${SSG__database}/templates/header.rc" ]; then
+	echo '<div id="header">'
+		. "${SSG__database}/templates/header.rc"
+	echo '</div>'
+fi
+
+# menu + page-content div
+echo '<div style="overflow: auto;">'
+
+# headlinks
+if [ -e "${SSG__database}/templates/headlinks.rc" ]; then
+	echo '<div id="headlinks">'
+	. "${SSG__database}/templates/headlinks.rc"
+	echo '</div>'
+fi
+
+# content div
+echo '<div id="page-content">'
+
+# cleanup
+unset template__html_title
+unset template__html_headers

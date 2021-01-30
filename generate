@@ -1,0 +1,129 @@
+#!/usr/bin/env sh
+# Bash Static Site Generator - entry point
+# 2021 MissKittin@GitHub
+# Required tools for entrypoint: date dirname readlink tr sort cat rm
+
+# execution time measurement (1)
+	entrypointStartTime="$(date '+%s')"
+
+# global variables (you can rewrite in database/defaults.rc.d)
+	export SSG__root="$(dirname "$(readlink -f "${0}")")"
+	export SSG__modules="${SSG__root}/modules"
+	export SSG__database="${SSG__root}/database"
+	export SSG__generated="${SSG__root}/generated"
+	export SSG__lib="${SSG__root}/lib"
+	[ -d "${SSG__root}/bin" ] && export PATH="${SSG__root}/bin:${PATH}"
+
+# local variables
+	entrypointCheckModules='true'
+	entrypointCheckTools='true'
+	. "${SSG__lib}/import-defaults.rc"
+
+# functions
+	check_disabled_modules()
+	{
+		local module
+		for module in ${2}; do
+			[ "${1}" = "${module}" ] && return '1'
+		done
+		return '0'
+	}
+
+# tools check
+	if "${entrypointCheckTools}"; then
+		echo ' :: Checking required tools'
+		moduleRequiredTools='date dirname readlink tr sort cat rm' # for entrypoint
+
+		for module in ${SSG__modules}/*; do
+			[ "${module}" = "${SSG__modules}/*" ] && break
+			[ -e "${module}/command-stack" ] && check_disabled_modules "${module##*/}" "${defaults__disabled_modules}" && moduleRequiredTools="${moduleRequiredTools} $(cat "${module}/command-stack")"
+		done
+
+		if [ ! "${moduleRequiredTools}" = '' ]; then
+			moduleRequiredTools="$(echo -n "${moduleRequiredTools}" | tr ' ' '\n' | sort -u)"
+
+			for tool in ${moduleRequiredTools}; do
+				echo -n "Checking '${tool}'"
+
+				if command -v "${tool}" > /dev/null 2>&1; then
+					echo ' [ OK ]'
+				else
+					echo ' [FAIL]'
+					echo -n 'Continue anyway? (y/[N]) '
+					read answer
+					[ ! "${answer}" = 'y' ] && exit 1
+					unset answer
+					break
+				fi
+			done
+		fi
+
+		unset moduleRequiredTools
+		unset tool
+	fi
+
+# module dependencies check
+	if "${entrypointCheckModules}"; then
+		echo ' :: Checking modules dependencies'
+		for module in ${SSG__modules}/*; do
+			[ "${module}" = "${SSG__modules}/*" ] && break
+			if [ -e "${module}/dependencies" ] && check_disabled_modules "${module##*/}" "${defaults__disabled_modules}"; then
+				echo -n "Checking module ${module##*/}"
+				if ! \
+					cat "${module}/dependencies" | while read dependentModule; do
+						if [ ! -e "${SSG__modules}/${dependentModule}" ]; then
+							echo -n " (failed on ${dependentModule} module) "
+							exit 1
+						fi
+					done
+				then
+					echo ' [FAIL]'
+					echo -n 'Continue anyway? (y/[N]) '
+					read answer
+					[ ! "${answer}" = 'y' ] && exit 1
+					unset answer
+					break
+				else
+					echo ' [ OK ]'
+				fi
+			fi
+		done
+	fi
+
+# output directory
+	if [ -e "${SSG__generated}" ]; then
+		echo ' :: Removing previously generated files'
+		rm -r -f "${SSG__generated}"
+	fi
+
+# modules generators
+	for module in ${SSG__modules}/*; do
+		[ "${module}" = "${SSG__root}/modules/*" ] && echo "No modules installed"
+		if [ -x "${module}/generate" ]; then
+			moduleName="${module##*/}"
+			if check_disabled_modules "${moduleName}" "${defaults__disabled_modules}"; then
+				echo " :: Running ${moduleName} module"
+				"${module}/generate"
+				echo " :: ${moduleName} module ended"
+
+				if [ -e "${SSG__generated}/.reimport-defaults" ]; then
+					echo ' :: Re-importing defaults variables'
+					. "${SSG__lib}/import-defaults.rc"
+					rm "${SSG__generated}/.reimport-defaults"
+				fi
+			else
+				echo " :: ${moduleName} module is disabled"
+			fi
+		fi
+	done
+
+# default module check
+	if [ "${defaults__home_module}" = '' ] || [ ! -e "${SSG__modules}/${defaults__home_module}" ]; then
+		echo "error: default module '${defaults__home_module}' not found in modules"
+		exit 1
+	fi
+
+# execution time measurement (2)
+	echo " :: Script executed in $(($(date '+%s')-entrypointStartTime)) seconds"
+
+exit 0

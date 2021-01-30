@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+# First run - database seed
+
+if [ ! -e "${SSG__database}" ]; then
+	echo 'Unpacking default database seed'
+	[ ! -e "${SSG__database}" ] && mkdir -p "${SSG__database}"
+	[ ! -e "${SSG__generated}" ] && mkdir -p "${SSG__generated}"
+
+	cd "${SSG__database}"
+	zcat "${0%/*}/database-seed.tar.gz" | tar xf -
+	echo -n '' > "${SSG__generated}/.reimport-defaults"
+fi
+
+exit 0
