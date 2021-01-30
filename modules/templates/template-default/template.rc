@@ -1,0 +1,66 @@
+# Template metadata
+	templateName='template-default'
+
+# Copy template to the "generated" directory
+	if [ ! -e "${SSG__generated}/assets/${templateName}.css" ]; then
+		echo "template.rc: Copying '${templateName}' template styles" >&2
+
+		[ ! -e "${SSG__generated}/assets" ] && mkdir -p "${SSG__generated}/assets"
+
+		for style in ${templateLocation}/css/*.css; do
+			[ "${style}" = "${templateLocation}/css/*.css" ] && break
+			if [ -e "${SSG__database}/templates/${templateName}.patches/css/${style##*/}" ]; then
+				cat "${SSG__database}/templates/${templateName}.patches/css/${style##*/}" >> "${SSG__generated}/assets/${templateName}.css"
+			else
+				cat "${style}" >> "${SSG__generated}/assets/${templateName}.css"
+			fi
+		done
+
+		for style in ${SSG__database}/templates/${templateName}.patches/css/*.css; do
+			[ "${style}" = "${SSG__database}/templates/${templateName}.patches/css/*.css" ] && break
+			[ ! -e "${templateLocation}/css/${style##*/}" ] && cat "${style}" >> "${SSG__generated}/assets/${templateName}.css"
+		done
+	fi
+
+	if [ ! -e "${SSG__generated}/assets/${templateName}.js" ]; then
+		echo "template.rc: Copying '${templateName}' template scripts" >&2
+
+		[ ! -e "${SSG__generated}/assets" ] && mkdir -p "${SSG__generated}/assets"
+
+		for script in ${templateLocation}/js/*.js; do
+			[ "${script}" = "${templateLocation}/js/*.js" ] && break
+			if [ -e "${SSG__database}/templates/${templateName}.patches/js/${script##*/}" ]; then
+				cat "${SSG__database}/templates/${templateName}.patches/js/${script##*/}" >> "${SSG__generated}/assets/${templateName}.js"
+			else
+				cat "${script}" >> "${SSG__generated}/assets/${templateName}.js"
+			fi
+		done
+
+		for script in ${SSG__database}/templates/${templateName}.patches/js/*.js; do
+			[ "${script}" = "${SSG__database}/templates/${templateName}.patches/js/*.js" ] && break
+			[ ! -e "${templateLocation}/css/${script##*/}" ] && cat "${script}" >> "${SSG__generated}/assets/${templateName}.js"
+		done
+	fi
+
+# Import resource
+	if [ "${2}" = 'resource' ]; then
+		if [ ! "${3}" = '' ] && [ -e "${templateLocation}/resources/${3}.rc" ]; then
+			. "${templateLocation}/resources/${3}.rc"
+		else
+			echo " - Resource ${3} not found in template ${templateName}" >&2
+			return '1'
+		fi
+		return '0'
+	fi
+
+# Print template part
+	if [ "${2}" = 'top' ]; then
+		local templatePart='top.rc'
+	elif [ "${2}" = 'bottom' ]; then
+		local templatePart='bottom.rc'
+	else
+		echo " - ${2} is not a valid template part" >&2
+		return 1
+	fi
+
+	. "${templateLocation}/parts/${templatePart}"

@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+# Pages generator module
+
+# defaults variables
+	. "${0%/*}/defaults.rc.d/pages.rc"
+
+# variables'
+	. "${SSG__lib}/import-includes.rc"
+	. "${SSG__lib}/import-defaults.rc"
+
+# directory in database
+	if [ ! -e "${SSG__database}/pages" ]; then
+		echo '"pages" directory not found in database'
+		exit 1
+	fi
+
+# functions
+	pages__render_script()
+	{
+		local script="${entrypoint%/*}/${1}"
+		local scriptPath="$(echo -n "${script}" | sed 's\'"${SSG__database}/pages/"'\\g')"
+		local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}"
+
+		[ -e "${renderedScriptPath}" ] && echo "error: directory conflict on ${pages__generated_directory}${scriptPath%/*}"
+
+		echo " Generating script ${scriptPath}"
+		[ ! -e "${renderedScriptPath}" ] && mkdir -p "${renderedScriptPath}"
+		. "${script}" >> "${renderedScriptPath}/${2}"
+	}
+	pages__copy_file()
+	{
+		local scriptLocation="${entrypoint%/*}/${1}"
+		scriptLocation="${scriptLocation%/*}"
+
+		local renderedFilePath="${renderedScriptPath}/${1}"
+		renderedFilePath="${renderedFilePath%/*}"
+
+		if [ -e "${scriptLocation}/${1}" ]; then
+			echo " Copying file ${1}" >&2
+
+			[ ! -e "${renderedFilePath}" ] && mkdir "${renderedFilePath}"
+			cp "${scriptLocation}/${1}" "${renderedScriptPath}/${1}"
+		else
+			echo " File ${1} not exists" >&2
+		fi
+	}
+
+# database processing
+	for page in ${SSG__database}/pages/*; do
+		[ "${page}" = "${SSG__database}/pages/*" ] && break
+
+		if [ -d "${page}" ]; then
+			echo "Generating page '${page##*/}'"
+			find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
+				unset page
+				. "${entrypoint}"
+			done
+		fi
+	done
+
+# home page processing
+	. "${SSG__lib}/import-includes.rc"
+	if [ "${pages__default_page}" = '' ]; then
+		echo 'pages__default_page is empty - home page not copied'
+	elif [ "${defaults__home_module}" = 'pages' ]; then
+		echo "This is default module - moving '${pages__default_page}' page"
+
+		if [ -e "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
+			mv "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+			rmdir "${SSG__generated}/${pages__generated_directory}${pages__default_page}" # will be failed if other files were copied
+		else
+			echo "${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension} not found in generated files"
+		fi
+	fi
+
+exit 0

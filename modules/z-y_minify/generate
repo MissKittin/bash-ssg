@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+# Minificator module
+
+# defaults variables
+. "${0%/*}/defaults.rc.d/minify.rc"
+
+# variables
+	. "${SSG__lib}/import-defaults.rc"
+
+# minify html
+	if "${minify__process_html}"; then
+		find ${SSG__generated} -name *.html | while read file; do
+			echo "Processing $(echo -n "${file}" | sed 's\'"${SSG__generated}"'\\g')"
+			sed -i -e ':a;N;$!ba;s/>\s*</></g' "${file}" # https://stackoverflow.com/questions/12376368/minify-html-files-in-text-html-templates
+		done
+	else
+		echo 'HTML minification is disabled in settings'
+	fi
+
+# minify css
+	if "${minify__process_css}"; then
+		find ${SSG__generated} -name *.css | while read file; do
+			echo "Processing $(echo -n "${file}" | sed 's\'"${SSG__generated}"'\\g')"
+			sed -i -e 's/^[ \t]*//g; s/[ \t]*$//g; s/\([:{;,]\) /\1/g; s/ {/{/g; s/\/\*.*\*\///g; /^$/d' "${file}" # https://gist.github.com/dominicmartineau/5483359
+			sed -i -e :a -e '$!N; s/\n\(.\)/\1/; ta' "${file}"
+		done
+	else
+		echo 'CSS minification is disabled in settings'
+	fi
+
+# minify js
+	if "${minify__process_js}"; then
+		find ${SSG__generated} -name *.js | while read file; do
+			echo "Processing $(echo -n "${file}" | sed 's\'"${SSG__generated}"'\\g')"
+			#sed -i -E 's@[[:blank:]]*(//|#).*@@;T;/./!d' "${file}" # https://unix.stackexchange.com/questions/383960/sed-stripping-comments-inline
+				sed -i -E 's@[[:blank:]]*(//).*@@;T;/./!d' "${file}" # patched
+			sed -i 's|/\*[^/]*\*/||g' "${file}"
+			sed -i -e "s/^[ \t]*//g" -e "/^$/d" "${file}" # https://stackoverflow.com/questions/12376368/minify-html-files-in-text-html-templates
+			sed -i ':a;N;$!ba;s/\n/ /g' "${file}" # https://stackoverflow.com/questions/1251999/how-can-i-replace-a-newline-n-using-sed
+		done
+	else
+		echo 'JS minification is disabled in settings'
+	fi
+
+exit 0

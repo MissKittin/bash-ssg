@@ -1,0 +1,38 @@
+/* default template - posts module patch - layout */
+.post {
+	background-color: #222222;
+	border-radius: 10px;
+}
+.post-title a, .post-title a:hover, .post-title a:visited {
+	color: #ffffff;
+	text-decoration: none;
+}
+.post-tags {
+	float: left;
+}
+.post-date {
+	text-align: right;
+}
+.post-title {
+	display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;
+}
+#pages {
+	margin: 0 auto;
+	padding: 0;
+	overflow: auto;
+}
+.page {
+	background-color: #222222;
+	border-radius: 50%;
+	float: left;
+	justify-content: center;
+	display: flex;
+	align-items: center;
+}
+.current-page {
+	background-color: #444444;
+}
+.page a, .page a:hover, .page a:visited {
+	color: #ffffff;
+	text-decoration: none;
+}

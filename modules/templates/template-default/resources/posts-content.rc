@@ -1,0 +1,29 @@
+# template resource for posts module
+
+# post title link (preconfiguration)
+if [ ! "${posts__post_title}" = '' ]; then
+	"${template_no_title_link}" && \
+		local posts__post_title="${posts__post_title}" || \
+		local posts__post_title='<a href="'"${defaults__url_prefix}/${posts__generated_post_directory}${renderedPost}"'">'"${posts__post_title}"'</a>'
+fi
+
+# post box
+echo '<div class="post">'
+	[ ! "${posts__post_tags}" = '' ] && echo '<div class="post-tags">'"${posts__post_tags}"'</div>'
+	[ ! "${posts__post_date}" = '' ] && echo '<div class="post-date">'"${posts__post_date}"'</div>'
+	[ ! "${posts__post_title}" = '' ] && echo '<div class="post-title">'"${posts__post_title}"'</div>'
+	. "${post}/content.rc"
+echo '</div>'
+
+# plugins box (only on post view)
+if "${template_no_title_link}"; then
+	for post_plugin in ${SSG__database}/posts-plugins/*/plugin.rc; do
+		[ "${post_plugin}" = "${SSG__database}/posts-plugins/*/plugin.rc" ] && break
+		if [ ! -e "${post_plugin%/*}/plugin-disabled" ]; then
+			echo '<div class="post post-plugin">'
+				. "${post_plugin}"
+			echo '</div>'
+		fi
+	done
+	unset post_plugin
+fi

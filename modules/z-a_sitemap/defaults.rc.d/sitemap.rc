@@ -1,0 +1,7 @@
+# sitemap module configuration
+sitemap__enabled='false'			# enable or disable sitemap generation
+sitemap__page_domain='http://localhost:8080'	# prefix
+sitemap__sitemap_file_name='sitemap.xml'	# sitemap file name
+sitemap__param_changefreq='monthly' 		# for all entries
+sitemap__save_info_to_robots_txt='true'		# Sitemap: sitemap-url
+sitemap__gzip_sitemap_xml='9'			# 1-9 or empty - disabled

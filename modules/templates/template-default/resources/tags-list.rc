@@ -1,0 +1,11 @@
+# template resource for posts-tags module
+echo '<div id="taglist">'
+	if [ ! "${posts__tag_list}" = '' ]; then
+		for tag in ${posts__tag_list}; do
+			echo '<h1 style="margin: 0; display: block; text-align: center;"><a href="'"${defaults__url_prefix}/${posts_tags__generated_directory}/${tag}"'">#'"${tag}"'</a></h1><br>'
+		done
+		unset tag
+	else
+		echo "${posts_tags__label_not_found}"
+	fi
+echo '</div>'

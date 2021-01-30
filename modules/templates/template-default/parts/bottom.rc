@@ -1,0 +1,18 @@
+# content div ending
+echo '</div>'
+
+# menu + page-content div ending
+echo '</div>'
+
+# footer
+if [ -e "${SSG__database}/templates/footer.rc" ]; then
+	echo '<div id="footer">'
+		. "${SSG__database}/templates/footer.rc"
+	echo '</div>'
+fi
+
+# ending
+cat << EOF
+	</body>
+</html>
+EOF

@@ -1,0 +1,158 @@
+#!/usr/bin/env sh
+# post-tags generator module
+
+# defaults variables
+. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
+. "${0%/*}/defaults.rc.d/posts-tags.rc"
+
+# variables
+	posts__tag_list='' # all tags list
+	. "${SSG__lib}/import-includes.rc"
+	. "${SSG__lib}/import-defaults.rc"
+	[ "${posts_tags__generated_directory}" = '' ] && posts_tags__generated_directory='tag'
+
+# directory in database
+	if [ ! -e "${SSG__database}/posts" ]; then
+		echo '"posts" directory not found in database'
+		exit 1
+	fi
+
+# functions
+	generatePostBox()
+	{
+		if [ ! "${1}" = 'noTitleLink' ]; then  # for post metadata
+			. "${post}/meta.rc"
+			template_no_title_link='false'
+		else
+			template_no_title_link='true'
+		fi
+
+		if [ -e "${post}/tags" ]; then
+			local tag
+			local posts__post_tags
+			for tag in ${post}/tags/*; do
+				[ "${tag}" = "${post}/tags/*" ] && break
+				posts__post_tags="${posts__post_tags} #${tag##*/}"
+			done
+			posts__post_tags="${posts__post_tags#?}"
+			unset tag
+		fi
+
+		if ! template__get_part "${defaults__template}" 'resource' 'posts-content'; then
+			echo "error: template ${defaults__template} does not provide posts-content.rc" >&2
+		fi
+
+		unset posts__post_title; unset posts__post_date; unset posts__post_tags
+		unset template_no_title_link
+	}
+
+# database processing - read all tags
+	for post in ${SSG__database}/posts/public_*; do
+		[ "${post}" = "${SSG__database}/posts/public_*" ] && break
+		for tag in ${post}/tags/*; do
+			[ "${tag}" = "${post}/tags/*" ] && break
+			posts__tag_list="${posts__tag_list} ${tag##*/}"
+		done
+	done
+	[ ! "${posts__tag_list}" = '' ] && posts__tag_list="$(echo -n "${posts__tag_list}" | tr ' ' '\n' | sort -u)" # sort tag list
+
+# tag list processing
+	[ ! -e "${SSG__generated}/${posts_tags__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_tags__generated_directory}"
+
+	template__get_part "${defaults__template}" 'top' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+	if ! template__get_part "${defaults__template}" 'resource' 'tags-list' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+		echo "error: template ${defaults__template} does not provide tags-list.rc"
+	fi
+
+	template__get_part "${defaults__template}" 'bottom' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+# tag listings processing
+	if [ ! "${posts__tag_list}" = '' ]; then
+		posts_tags__generate_list()
+		{
+			echo " Processing page ${1}"
+
+			local post
+			local renderedPageDir="${SSG__generated}/${posts_tags__generated_directory}/${tag}/${1}" # cache
+			local currentPageNumber="${1}" # for template
+			local template__html_title="${posts_tags__list_html_title}"
+
+			[ ! -e "${renderedPageDir}" ] && mkdir -p "${renderedPageDir}"
+
+			template__get_part "${defaults__template}" 'top' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+			for post in ${2}; do
+				postName="${post##*/}"
+				echo "  Adding post ${postName##*_}"
+				unset postName
+
+				local renderedPost="${post##*_}"
+				generatePostBox >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+				unset renderedPost
+			done
+
+			if ! template__get_part "${defaults__template}" 'resource' 'tags-pages' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+				echo "error: template ${defaults__template} does not provide tags-pages.rc"
+			fi
+
+			template__get_part "${defaults__template}" 'bottom' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+			unset template__html_title
+			unset currentPageNumber
+			unset renderedPageDir
+			unset post
+		}
+
+		for tag in ${posts__tag_list}; do
+			echo "Processing tag ${tag}"
+
+			posts_tags__list=''
+			posts_tags__list_limit_indicator='1'
+			posts_tags__current_page_indicator='1'
+
+			posts_tags__counted_posts='0'
+			for post in $(find ${SSG__database}/posts/public_* -type f | grep '/tags/' | grep "${tag}"); do
+				posts_tags__counted_posts="$((posts_tags__counted_posts+1))"
+			done
+			posts_tags__counted_pages="$(echo "${posts_tags__counted_posts} ${posts__posts_per_page}" | awk '{print ($1/$2)+0.9}' | awk '{printf "%.0d", $1}')"
+			unset post
+			unset posts_tags__counted_posts
+
+			for post in $(find ${SSG__database}/posts/public_* -type f | grep '/tags/' | grep "${tag}" | tac); do
+				post="$(echo -n "${post}" | sed 's\/tags/'"${tag}"'\\g')"
+				posts_tags__list="${posts_tags__list} ${post}"
+
+				if [ "${posts_tags__list_limit_indicator}" = "${posts__posts_per_page}" ]; then
+					posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+
+					posts_tags__list=''
+					posts_tags__list_limit_indicator='1'
+					posts_tags__current_page_indicator="$((posts_tags__current_page_indicator+1))"
+				else
+					posts_tags__list_limit_indicator="$((posts_tags__list_limit_indicator+1))"
+				fi
+			done
+			[ ! "${posts_tags__list}" = '' ] && posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+
+			mv "${SSG__generated}/${posts_tags__generated_directory}/${tag}/1/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${posts_tags__generated_directory}/${tag}/${defaults__default_file_name}${defaults__default_file_extension}"
+			rmdir "${SSG__generated}/${posts_tags__generated_directory}/${tag}/1"
+
+			unset post
+			unset posts_tags__counted_pages
+			unset posts_tags__current_page_indicator
+			unset posts_tags__list_limit_indicator
+			unset posts_tags__list
+		done
+
+		unset posts_tags__generate_list
+		unset tag
+	fi
+
+# home page processing
+	if [ "${defaults__home_module}" = 'posts-tags' ]; then
+			echo "This is default module - generating home page"
+			mv "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+	fi
+
+exit 0

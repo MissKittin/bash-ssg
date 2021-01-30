@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# copy static files to public directory
+
+if [ -e "${SSG__database}/static" ]; then
+		echo 'Copying static files'
+		[ ! -e "${SSG__generated}" ] && mkdir -p "${SSG__generated}"
+		cp -rfp ${SSG__database}/static/* "${SSG__generated}"
+		for hiddenfile in ${SSG__database}/static/.*; do
+			if [ ! "${hiddenfile}" = "${SSG__database}/static/." ] && [ ! "${hiddenfile}" = "${SSG__database}/static/.." ]; then
+				cp -rfp "${hiddenfile}" "${SSG__generated}"
+			fi
+		done
+else
+	echo '"static" directory not found in database'
+fi
+
+exit 0

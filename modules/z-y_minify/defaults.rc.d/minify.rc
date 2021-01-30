@@ -1,0 +1,4 @@
+# minify module configuration
+minify__process_html='false'
+minify__process_css='false'
+minify__process_js='false'
