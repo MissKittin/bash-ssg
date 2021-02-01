@@ -2,8 +2,8 @@
 # post-tags generator module
 
 # defaults variables
-. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
-. "${0%/*}/defaults.rc.d/posts-tags.rc"
+	. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
+	. "${0%/*}/defaults.rc.d/posts-tags.rc"
 
 # variables
 	posts__tag_list='' # all tags list

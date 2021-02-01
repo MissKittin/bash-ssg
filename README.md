@@ -26,7 +26,7 @@ Reads files from the `database` directory and renders to the `generated` directo
 8) edit the settings in `defaults.rc.d`
 
 ### Settings
-The main `generate` script defines global variables for all modules - you can edit this, also you can change shebang in this file.  
+The main `generate` script defines global variables for all modules - if you need, copy this block, paste to the `database/defaults.rc.d/defaults.rc` and edit. You can change shebang in this file.  
 Modules reads the default settings from `modules/*/defaults.rc.d` - do not edit these files. Just copy the chosen config file to the `database/defaults.rc.d` and edit - files from the `database` directory has higher priority than configs from `modules`.  
 The main settings are defined in `database/defaults.rc.d/defaults.rc` - do not delete this file.  
 You can create `bin` directory and put binaries or links in it (see main `generate` script).
