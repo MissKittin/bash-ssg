@@ -2,7 +2,7 @@
 # sitemap.xml generator
 
 # defaults variables
-. "${0%/*}/defaults.rc.d/sitemap.rc"
+	. "${0%/*}/defaults.rc.d/sitemap.rc"
 
 # variables
 	. "${SSG__lib}/import-defaults.rc"

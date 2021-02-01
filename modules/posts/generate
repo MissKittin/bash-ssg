@@ -2,7 +2,7 @@
 # post generator module
 
 # defaults variables
-. "${0%/*}/defaults.rc.d/posts.rc"
+	. "${0%/*}/defaults.rc.d/posts.rc"
 
 # variables
 	posts__ind='1'; posts__ind_pages='1'; posts__page='1' # indicators
@@ -47,9 +47,7 @@
 # database preprocessing - count pages
 	posts__counted_posts='1'
 	for post in ${SSG__database}/posts/public_*; do
-		if [ "${post}" = "${SSG__database}/posts/public_*" ]; then
-			echo 'No posts found'
-		fi
+		[ "${post}" = "${SSG__database}/posts/public_*" ] && break
 		posts__counted_posts="$((posts__counted_posts+1))"
 	done
 
@@ -128,8 +126,8 @@
 
 	for post in ${post}; do
 		if [ "${post}" = "${SSG__database}/posts/public_*" ]; then
-			echo 'No posts found'
 
+			mkdir -p "${SSG__generated}/${posts__generated_page_directory}1"
 			template__get_part "${defaults__template}" 'top' >> "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}"
 			echo "${posts__label_not_found}" >> "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}"
 			template__get_part "${defaults__template}" 'bottom' >> "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}"

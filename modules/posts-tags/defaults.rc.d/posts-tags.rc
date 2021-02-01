@@ -1,3 +1,3 @@
 # posts-tags module configuration
 posts_tags__generated_directory='tag' # directory for tags, cannot be empty
-posts_tags__label_not_found='<h1 style="text-align: center;">No tags found</h1>' # if no tags found
+posts_tags__label_not_found='<h1 style="text-align: center; display: block;">No tags found</h1>' # if no tags found

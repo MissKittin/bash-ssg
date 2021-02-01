@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-# Minificator module
+# minificator module
 
 # defaults variables
-. "${0%/*}/defaults.rc.d/minify.rc"
+	. "${0%/*}/defaults.rc.d/minify.rc"
 
 # variables
 	. "${SSG__lib}/import-defaults.rc"
