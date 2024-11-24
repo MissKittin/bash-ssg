@@ -18,7 +18,7 @@
 	pages__render_script()
 	{
 		local script="${entrypoint%/*}/${1}"
-		local scriptPath="$(echo -n "${script}" | sed 's\'"${SSG__database}/pages/"'\\g')"
+		local scriptPath="$(echo -n "${script}" | sed 's|'"${SSG__database}/pages/"'||g')"
 		local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}"
 
 		[ -e "${renderedScriptPath}" ] && echo "error: directory conflict on ${pages__generated_directory}${scriptPath%/*}"

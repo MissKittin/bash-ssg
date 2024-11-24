@@ -1,6 +1,7 @@
 # posts module configuration
 posts__generated_page_directory='page/' # must be empty or with slash at the end
 posts__generated_post_directory='post/' # must be empty or with slash at the end
+posts__no_first_page_mode='false'       # use url /post instead of /post/1 (set the two above values to e.g. 'post/')
 posts__posts_per_page='5'
 posts__list_html_title="Posts - ${defaults__html_title}"
 posts__label_not_found='<h1 style="text-align: center; display: block;">No posts found</h1>'

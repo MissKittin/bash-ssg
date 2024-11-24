@@ -1,0 +1,10 @@
+# Bash SSG general configuration- do not remove this file
+defaults__disabled_modules='' # moduleA moduleB moduleC
+defaults__default_file_name='index'       # you can rename default index file name to eg. default (output file name: ${defaults__default_file_name}${defaults__default_file_extension})
+defaults__default_file_extension='.html'  # you can rename default index extensions to eg. .php
+defaults__home_module='pages'             # directory name from modules directory, cannot be empty
+defaults__url_prefix=''                   # empty or without slash at the end
+defaults__template='template-default'
+defaults__html_lang='en'                  # <html lang="${defaults__html_lang}">
+defaults__html_title='Bash SSG'           # <title>${defaults__html_title}</title>
+defaults__archive_old_generated='false'   # move old "generated" directory to "generated-yyyymmddhhmmss"

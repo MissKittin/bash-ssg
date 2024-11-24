@@ -59,12 +59,32 @@
 # database processing
 	for post in ${SSG__database}/posts/public_*; do
 		if [ "${post}" = "${SSG__database}/posts/public_*" ]; then
-			echo "No posts found in database"
+			echo 'No published posts found in database'
 			break
 		fi
 
 		postName="${post##*/}"
-		echo "Generating post ${postName##*_}"
+		echo "Generating published post ${postName##*_}"
+		unset postName
+
+		renderedPostDir="${post##*/}"; renderedPostDir="${renderedPostDir##*_}"; renderedPostDir="${SSG__generated}/${posts__generated_post_directory}${renderedPostDir}" # cache
+		[ ! -e "${renderedPostDir}" ] && mkdir -p "${renderedPostDir}"
+
+		. "${post}/meta.rc" # for template settings
+		[ ! "${posts__post_title}" = '' ] && template__html_title="${posts__post_title}" # set html title
+
+		template__get_part "${defaults__template}" 'top' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		generatePostBox 'noTitleLink' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		template__get_part "${defaults__template}" 'bottom' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+	done
+	for post in ${SSG__database}/posts/hidden_*; do
+		if [ "${post}" = "${SSG__database}/posts/hidden_*" ]; then
+			echo 'No hidden posts found in database'
+			break
+		fi
+
+		postName="${post##*/}"
+		echo "Generating hidden post ${postName##*_}"
 		unset postName
 
 		renderedPostDir="${post##*/}"; renderedPostDir="${renderedPostDir##*_}"; renderedPostDir="${SSG__generated}/${posts__generated_post_directory}${renderedPostDir}" # cache
@@ -81,12 +101,15 @@
 # posts list processing
 	posts__generate_list()
 	{
-		echo "Processing page ${1}"
-
 		local post
-		local renderedPostDir="${SSG__generated}/${posts__generated_page_directory}${1}" # cache
 		local currentPageNumber="${1}" # for template
+		local renderedPostDir="${SSG__generated}/${posts__generated_page_directory}${currentPageNumber}" # cache
 		local template__html_title="${posts__list_html_title}"
+
+		echo "Processing page ${currentPageNumber}"
+
+		"${posts__no_first_page_mode}" && [ "${currentPageNumber}" = '1' ] && \
+			renderedPostDir="${SSG__generated}/${posts__generated_page_directory}"
 
 		[ ! -e "${renderedPostDir}" ] && mkdir -p "${renderedPostDir}"
 
@@ -105,11 +128,6 @@
 		fi
 
 		template__get_part "${defaults__template}" 'bottom' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-
-		unset template__html_title
-		unset currentPageNumber
-		unset renderedPostDir
-		unset post
 	}
 
 	# reverse order
@@ -158,7 +176,9 @@
 # home page processing
 	if [ "${defaults__home_module}" = 'posts' ]; then
 		echo "This is default module - generating home page"
-		if [ -e "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
+		if "${posts__no_first_page_mode}" && [ -e "${SSG__generated}/${posts__generated_page_directory}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
+			cp "${SSG__generated}/${posts__generated_page_directory}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+		elif [ -e "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
 			cp "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 		else
 			echo "Generating 'no posts found'"

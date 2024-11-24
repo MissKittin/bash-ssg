@@ -1,0 +1,7 @@
+pages__render_script '400/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '403/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '404/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '500/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '502/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '503/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script '504/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"

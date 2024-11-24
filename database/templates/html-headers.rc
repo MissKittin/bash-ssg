@@ -1,0 +1,5 @@
+# write html headers here
+cat << EOF
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="shortcut icon" href="${defaults__url_prefix}/assets/favicon.ico">
+EOF

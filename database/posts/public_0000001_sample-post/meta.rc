@@ -1,0 +1,16 @@
+# set post metadata
+posts__post_title='Sample post'
+posts__post_date='21.12.2020'
+
+# additional HTML headers
+template__html_headers='<!-- this code will be displayed in this posts page header -->'
+
+# SEO HTML headers
+template__html_headers="${template__html_headers}"'
+	<meta property="article:author" content="BashSsgAdmin">
+	<meta property="article:published_time" content="2020-12-21T21:34:56+00:00">
+	<meta name="description" content="Post directory name: public_0000001_sample-post where public notices script that post is published">
+
+	<meta property="tag" content="sampletag1">
+	<meta property="tag" content="sampletag2">
+'

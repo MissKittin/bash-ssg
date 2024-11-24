@@ -27,7 +27,7 @@
 	fi
 	echo 'Generating sitemap...'
 
-# save sitemap.xml header 
+# save sitemap.xml header
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' > "${SSG__generated}/${sitemap__sitemap_file_name}"
 	echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 
@@ -69,7 +69,12 @@
 	echo -n '</urlset>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 
 # gzip sitemap.xml
-	[ ! "${sitemap__gzip_sitemap_xml}" = '' ] && gzip "-${sitemap__gzip_sitemap_xml}" "${SSG__generated}/${sitemap__sitemap_file_name}"
+	if [ ! "${sitemap__gzip_sitemap_xml}" = '' ]; then
+		gzip "-${sitemap__gzip_sitemap_xml}" "${SSG__generated}/${sitemap__sitemap_file_name}"
+
+		"${sitemap__remove_gz_extension}" && \
+			mv "${SSG__generated}/${sitemap__sitemap_file_name}.gz" "${SSG__generated}/${sitemap__sitemap_file_name}"
+	fi
 
 # save info to robots.txt
 	if "${sitemap__save_info_to_robots_txt}"; then

@@ -120,7 +120,7 @@
 			unset posts_tags__counted_posts
 
 			for post in $(find ${SSG__database}/posts/public_* -type f | grep '/tags/' | grep "${tag}" | tac); do
-				post="$(echo -n "${post}" | sed 's\/tags/'"${tag}"'\\g')"
+				post="$(echo -n "${post}" | sed 's|/tags/'"${tag}"'||g')"
 				posts_tags__list="${posts_tags__list} ${post}"
 
 				if [ "${posts_tags__list_limit_indicator}" = "${posts__posts_per_page}" ]; then

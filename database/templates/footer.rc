@@ -1,0 +1,6 @@
+# write footer
+cat << EOF
+	<div style="text-align: right; width: 100%;">
+		This is footer.rc file from database/templates
+	</div>
+EOF

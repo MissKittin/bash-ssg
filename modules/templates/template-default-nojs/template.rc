@@ -1,0 +1,47 @@
+# Template metadata
+	templateName='template-default-nojs'
+	parentTemplate='../template-default'
+
+# Copy template to the "generated" directory
+	if [ ! -e "${SSG__generated}/assets/${templateName}.css" ]; then
+		echo "template.rc: Copying '${templateName}' template styles" >&2
+
+		[ ! -e "${SSG__generated}/assets" ] && mkdir -p "${SSG__generated}/assets"
+
+		for style in ${templateLocation}/${parentTemplate}/css/*.css; do
+			[ "${style}" = "${templateLocation}/${parentTemplate}/css/*.css" ] && break
+			if [ -e "${SSG__database}/templates/${templateName}.patches/css/${style##*/}" ]; then
+				cat "${SSG__database}/templates/${templateName}.patches/css/${style##*/}" >> "${SSG__generated}/assets/${templateName}.css"
+			elif [ -e "${templateLocation}/css/${style##*/}" ]; then
+				cat "${templateLocation}/css/${style##*/}" >> "${SSG__generated}/assets/${templateName}.css"
+			else
+				cat "${style}" >> "${SSG__generated}/assets/${templateName}.css"
+			fi
+		done
+
+		for style in ${SSG__database}/templates/${templateName}.patches/css/*.css; do
+			[ "${style}" = "${SSG__database}/templates/${templateName}.patches/css/*.css" ] && break
+			[ ! -e "${templateLocation}/css/${style##*/}" ] && cat "${style}" >> "${SSG__generated}/assets/${templateName}.css"
+		done
+	fi
+
+# Import resource
+	if [ "${2}" = 'resource' ]; then
+		if [ ! "${3}" = '' ] && [ -e "${templateLocation}/${parentTemplate}/resources/${3}.rc" ]; then
+			. "${templateLocation}/${parentTemplate}/resources/${3}.rc"
+		else
+			echo " - Resource ${3} not found in template ${templateName}" >&2
+			return '1'
+		fi
+		return '0'
+	fi
+
+# Print template part
+	if [ "${2}" = 'top' ]; then
+		. "${templateLocation}/parts/top.rc"
+	elif [ "${2}" = 'bottom' ]; then
+		. "${templateLocation}/${parentTemplate}/parts/bottom.rc"
+	else
+		echo " - ${2} is not a valid template part" >&2
+		return 1
+	fi

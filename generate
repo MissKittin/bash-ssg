@@ -1,10 +1,20 @@
 #!/usr/bin/env sh
 # Bash Static Site Generator - entry point
 # 2021 MissKittin@GitHub
-# Required tools for entrypoint: date dirname readlink tr sort cat rm
+# Required tools for entrypoint: date dirname readlink tr sort cat mv rm
 
-# execution time measurement (1)
-	entrypointStartTime="$(date '+%s')"
+echo ' :: Checking required tools'
+for tool in 'dirname' 'readlink'; do
+	echo -n "Checking '${tool}'"
+
+	if command -v "${tool}" > /dev/null 2>&1; then
+		echo ' [ OK ]'
+	else
+		echo ' [FAIL]'
+		exit 1
+	fi
+done
+unset tool
 
 # global variables (you can rewrite in database/defaults.rc.d)
 	export SSG__root="$(dirname "$(readlink -f "${0}")")"
@@ -13,6 +23,9 @@
 	export SSG__generated="${SSG__root}/generated"
 	export SSG__lib="${SSG__root}/lib"
 	[ -d "${SSG__root}/bin" ] && export PATH="${SSG__root}/bin:${PATH}"
+
+# execution time measurement (1)
+	entrypointStartTime="$(date '+%s')"
 
 # local variables
 	entrypointCheckModules='true'
@@ -32,7 +45,7 @@
 # tools check
 	if "${entrypointCheckTools}"; then
 		echo ' :: Checking required tools'
-		moduleRequiredTools='date dirname readlink tr sort cat rm' # for entrypoint
+		moduleRequiredTools='date tr sort cat mv rm' # for entrypoint
 
 		for module in ${SSG__modules}/*; do
 			[ "${module}" = "${SSG__modules}/*" ] && break
@@ -92,8 +105,13 @@
 
 # output directory
 	if [ -e "${SSG__generated}" ]; then
-		echo ' :: Removing previously generated files'
-		rm -r -f "${SSG__generated}"
+		if "${defaults__archive_old_generated}"; then
+			echo ' :: Archiving previously generated files'
+			mv "${SSG__generated}" "${SSG__generated}-$(date '+%Y%m%d%H%M%S')"
+		else
+			echo ' :: Removing previously generated files'
+			rm -r ${SSG__generated}/* > /dev/null 2>&1
+		fi
 	fi
 
 # modules generators

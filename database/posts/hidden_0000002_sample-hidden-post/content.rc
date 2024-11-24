@@ -1,0 +1,11 @@
+# write post content
+cat << EOF
+	<p style="text-align: center;">This is the hidden sample post.</p>
+	<p>
+		Post directory name:
+		<span style="font-weight: bold;">hidden_0000002_sample-hidden-post</span>,
+		where <span style="font-weight: bold;">hidden</span> notices script that post is published but is not indexed in the post list and tag lists
+		<span style="font-weight: bold;">0000002</span> is queue number
+		and <span style="font-weight: bold;">sample-hidden-post</span> is post url name.
+	</p>
+EOF

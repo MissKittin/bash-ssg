@@ -1,0 +1,15 @@
+# set page title
+template__html_title="${defaults__html_title}"
+
+# add top template
+template__get_part "${defaults__template}" 'top'
+
+# write content
+cat << EOF
+	<h1>Bash static site generator</h1>
+	<p>This is the default home page.</p>
+	<p>Generated from <span style="font-weight: bold;">${script}</span> - edit this file</p>
+EOF
+
+# add bottom template
+template__get_part "${defaults__template}" 'bottom'

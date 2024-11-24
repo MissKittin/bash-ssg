@@ -1,0 +1,2 @@
+# render index.rc to default file
+pages__render_script 'index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"

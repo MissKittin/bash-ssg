@@ -1,0 +1,38 @@
+# set page name
+template__html_title="Sample page - ${defaults__html_title}"
+
+# add in headers
+template__html_headers='
+	<!-- if you see this, template__html_headers works -->
+	<link rel="stylesheet" type="text/css" href="'"/${pages__generated_directory}${scriptPath%/*}"'/square.css">
+'
+
+# page SEO metadata
+template__html_headers="${template__html_headers}"'
+	<meta name="description" content="This is sample page description and CSS square test.">
+'
+
+# add top template
+template__get_part "${defaults__template}" 'top'
+
+# write content
+cat << EOF
+	<h1>Sample page</h1>
+	<div>
+		<span style="font-weight: bold;">Variables</span><br>
+		\${entrypoint}="${entrypoint}"<br>
+		\${script}="${script}"<br>
+		\${scriptPath}="${scriptPath}"<br>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath}"<br>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}"<br>
+		/\${pages__generated_directory}\${scriptPath%/*}="/${pages__generated_directory}${scriptPath%/*}"
+	</div>
+	<p>If you see red square above, <span style="font-weight: bold;">pages__copy_file</span> function works.</p>
+	<div id="square"></div>
+EOF
+
+# add bottom template
+template__get_part "${defaults__template}" 'bottom'
+
+# copy additional files (if files are in directory, write directory/file.ext in argument)
+pages__copy_file 'square.css'

@@ -5,7 +5,6 @@ window.addEventListener('DOMContentLoaded', function(){
 	{
 		if(window.innerWidth > 700)
 		{
-		
 			var header=document.getElementById('header');
 				var headerHeight=window.getComputedStyle(header).margin;
 				headerHeight=parseFloat(headerHeight);

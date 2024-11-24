@@ -1,0 +1,4 @@
+# write top page header
+cat << EOF
+	<h1 style="text-align: center;">This is header.rc file from database/templates</h1>
+EOF

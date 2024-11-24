@@ -14,7 +14,11 @@ if [ "${posts__counted_pages}" -gt '1' ]; then
 		)
 		do
 			[ "${currentPageNumber}" = "${pageNumber}" ] && local pageNumberCurrent=' current-page'
-			echo '<div class="page'"${pageNumberCurrent}"'"><a href="'"${defaults__url_prefix}/${posts__generated_page_directory}${pageNumber}"'">'"${pageNumber}"'</a></div>'
+			if "${posts__no_first_page_mode}" && [ "${pageNumber}" = '1' ]; then
+				echo '<div class="page'"${pageNumberCurrent}"'"><a href="'"${defaults__url_prefix}/${posts__generated_page_directory}"'">'"${pageNumber}"'</a></div>'
+			else
+				echo '<div class="page'"${pageNumberCurrent}"'"><a href="'"${defaults__url_prefix}/${posts__generated_page_directory}${pageNumber}"'">'"${pageNumber}"'</a></div>'
+			fi
 			unset pageNumberCurrent
 		done
 		unset pageNumber

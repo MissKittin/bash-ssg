@@ -1,0 +1,25 @@
+# sample plugin displayed under post
+
+# create post_id variable
+post_id="${post##*/}"; post_id="${post_id#*_}"; post_id="${post_id%_*}"
+
+# extract post url
+post_url="${post##*/}"; post_url="${post_url##*_}"
+
+cat << EOF
+	<h3 style="text-align: center;">Sample plugin - title</h3>
+	<div>
+		<span style="font-weight: bold;">Variables:</span><br>
+		\${post}="${post}"<br>
+		\${post_plugin}="${post_plugin}"<br>
+		\${post_url}="${post_url}" => post url => generated in plugin.rc<br>
+		<span style="font-weight: bold;">Post ID:</span> ${post_id} => generated in plugin.rc<br>
+		<span style="font-weight: bold;">Post URL:</span> ${defaults__url_prefix}/${posts__generated_post_directory}${post_url} => generated in plugin.rc
+	</div>
+EOF
+
+# remove post_id variable
+unset post_id
+
+# remove post url variable
+unset post_url
