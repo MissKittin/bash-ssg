@@ -1,8 +1,11 @@
 # set page title
-template__html_title="${defaults__html_title}"
+template__html_title="${template__site_title}"
+
+# you can add code at the beginning of the generated file
+#echo -n "<?php header('Cache-Control: public, max-age=31536000'); ?>"
 
 # add top template
-template__get_part "${defaults__template}" 'top'
+templates__current_get_part 'top'
 
 # write content
 cat << EOF
@@ -11,5 +14,17 @@ cat << EOF
 	<p>Generated from <span style="font-weight: bold;">${script}</span> - edit this file</p>
 EOF
 
+# instead of pure html you can use something else, like this
+#pandoc --from markdown --to html5 --no-highlight "${script%/*}/index.md"
+# or like this
+#pandoc --from markdown --to html5 --no-highlight << EOF
+## Bash static site generator
+#This is the default home page.  
+#Generated from **${script}** - edit this file
+#EOF
+
 # add bottom template
-template__get_part "${defaults__template}" 'bottom'
+templates__current_get_part 'bottom'
+
+# you can add code at the end of the generated file
+#echo -n "<?php my_function(); ?>"

@@ -1,0 +1,25 @@
+# insert your own post div code
+# !!! RENAME THIS FILE TO template-post-box.rc
+# for template_default
+
+# you can treat the whole div as a link to the post (1)
+#"${template__no_title_link}" || echo '<a href="'"${defaults__url_prefix}/${posts__generated_post_directory}${renderedPost}"'">'
+
+
+[ ! "${posts__post_id}" = '' ] && posts__post_id_class=" post-id-${posts__post_id}"
+cat << EOF
+	<div class="post${posts__post_id_class}" style="background-image: url(/assets/image.jpg);">
+		<div class="post-tags" style="color: #abfc00;">${posts__post_tags}</div>
+		<div class="post-date" style="color: #abfc00;">${posts__post_date}</div>
+		<div class="post-title">${posts__post_title}</div>
+EOF
+unset 'posts__post_id_class'
+
+# now include your post content
+. "${post}/content.rc"
+
+# end of <div class="post">
+echo '</div>'
+
+# you can treat the whole div as a link to the post (2)
+#"${template__no_title_link}" || echo '</a>'

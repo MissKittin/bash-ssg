@@ -1,17 +1,23 @@
 #!/usr/bin/env sh
-# copy static files to public directory
+# Copy static files to public directory
+__module_name__='static'
 
-if [ -e "${SSG__database}/static" ]; then
+static__dbdir='static'
+
+if [ -e "${SSG__database}/${static__dbdir}" ]; then
 		echo 'Copying static files'
 		[ ! -e "${SSG__generated}" ] && mkdir -p "${SSG__generated}"
-		cp -rfp ${SSG__database}/static/* "${SSG__generated}"
-		for hiddenfile in ${SSG__database}/static/.*; do
-			if [ ! "${hiddenfile}" = "${SSG__database}/static/." ] && [ ! "${hiddenfile}" = "${SSG__database}/static/.." ]; then
+		cp -rfp ${SSG__database}/${static__dbdir}/* "${SSG__generated}"
+		for hiddenfile in ${SSG__database}/${static__dbdir}/.*; do
+			if [ ! "${hiddenfile}" = "${SSG__database}/${static__dbdir}/." ] && [ ! "${hiddenfile}" = "${SSG__database}/${static__dbdir}/.." ]; then
 				cp -rfp "${hiddenfile}" "${SSG__generated}"
 			fi
 		done
 else
-	echo '"static" directory not found in database'
+	echo '"'"${static__dbdir}"'" directory not found in database'
 fi
+
+# you can't do that
+	[ "${defaults__home_module}" = "${__module_name__}" ] && echo 'Error: this module cannot be the default module' && exit 1
 
 exit 0

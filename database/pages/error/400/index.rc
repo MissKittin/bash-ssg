@@ -1,10 +1,10 @@
-echo '' > ${renderedScriptPath}/exclude-from-sitemap
+echo '' > "${renderedScriptPath}/exclude-from-sitemap"
 
-template__html_title='Bad request'
-template__get_part "${defaults__template}" 'top'
+template__html_title="Bad request - ${template__site_title}"
+templates__current_get_part 'top'
 
 cat << EOF
 	<h1 style="text-align: center;">Bad request</h1>
 EOF
 
-template__get_part "${defaults__template}" 'bottom'
+templates__current_get_part 'bottom'

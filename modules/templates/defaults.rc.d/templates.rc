@@ -1,0 +1,3 @@
+# templates module configuration
+templates__template='template-default' # from modules/templates or database/templates
+templates__dbdir='templates/'

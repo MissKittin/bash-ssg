@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 # Pages generator module
+__module_name__='pages'
 
 # defaults variables
+	pages__dbdir='pages'
 	. "${0%/*}/defaults.rc.d/pages.rc"
 
 # variables'
@@ -9,8 +11,8 @@
 	. "${SSG__lib}/import-defaults.rc"
 
 # directory in database
-	if [ ! -e "${SSG__database}/pages" ]; then
-		echo '"pages" directory not found in database'
+	if [ ! -e "${SSG__database}/${pages__dbdir}" ]; then
+		echo '"'"${pages__dbdir}"'" directory not found in database'
 		exit 1
 	fi
 
@@ -18,8 +20,9 @@
 	pages__render_script()
 	{
 		local script="${entrypoint%/*}/${1}"
-		local scriptPath="$(echo -n "${script}" | sed 's|'"${SSG__database}/pages/"'||g')"
-		local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}"
+		local scriptPath="$(echo -n "${script}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
+		local renderedScriptPathSubpath="${3}"; [ ! "${renderedScriptPathSubpath}" = '' ] && renderedScriptPathSubpath="/${renderedScriptPathSubpath}"
+		local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}${renderedScriptPathSubpath}"
 
 		[ -e "${renderedScriptPath}" ] && echo "error: directory conflict on ${pages__generated_directory}${scriptPath%/*}"
 
@@ -29,40 +32,55 @@
 	}
 	pages__copy_file()
 	{
-		local scriptLocation="${entrypoint%/*}/${1}"
-		scriptLocation="${scriptLocation%/*}"
+		local scriptLocation="${entrypoint%/*}"
 
-		local renderedFilePath="${renderedScriptPath}/${1}"
-		renderedFilePath="${renderedFilePath%/*}"
+		if [ "${renderedScriptPath}" = '' ]; then
+			local scriptPath="$(echo -n "${entrypoint%/*}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
+			local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}"
+		fi
 
 		if [ -e "${scriptLocation}/${1}" ]; then
-			echo " Copying file ${1}" >&2
+			if [ -f "${scriptLocation}/${1}" ]; then
+				echo " Copying file '${1}' to '${2}'" >&2
+			elif [ -d "${scriptLocation}/${1}" ]; then
+				echo " Copying directory '${1}' to '${2}'" >&2
+			else
+				echo " Copying '${1}' to '${2}'" >&2
+			fi
 
-			[ ! -e "${renderedFilePath}" ] && mkdir "${renderedFilePath}"
-			cp "${scriptLocation}/${1}" "${renderedScriptPath}/${1}"
+			[ ! -e "${renderedScriptPath}" ] && mkdir "${renderedScriptPath}"
+			cp -r "${scriptLocation}/${1}" "${renderedScriptPath}/${2}"
 		else
-			echo " File ${1} not exists" >&2
+			echo "  File ${scriptLocation}/${1} not exists" >&2
 		fi
 	}
 
 # database processing
-	for page in ${SSG__database}/pages/*; do
-		[ "${page}" = "${SSG__database}/pages/*" ] && break
+	for page in ${SSG__database}/${pages__dbdir}/*; do
+		[ "${page}" = "${SSG__database}/${pages__dbdir}/*" ] && break
 
 		if [ -d "${page}" ]; then
 			echo "Generating page '${page##*/}'"
-			find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
-				unset page
-				. "${entrypoint}"
-			done
+			if "${pages__parallel_rendering}"; then
+				find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
+					unset 'page'
+					. "${entrypoint}"
+				done &
+			else
+				find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
+					unset 'page'
+					. "${entrypoint}"
+				done
+			fi
 		fi
 	done
+	"${pages__parallel_rendering}" && wait
 
 # home page processing
 	. "${SSG__lib}/import-includes.rc"
-	if [ "${pages__default_page}" = '' ]; then
+	[ "${defaults__home_module}" = "${__module_name__}" ] && if [ "${pages__default_page}" = '' ]; then
 		echo 'pages__default_page is empty - home page not copied'
-	elif [ "${defaults__home_module}" = 'pages' ]; then
+	else
 		echo "This is default module - moving '${pages__default_page}' page"
 
 		if [ -e "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then

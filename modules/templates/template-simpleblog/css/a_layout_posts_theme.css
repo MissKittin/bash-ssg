@@ -1,0 +1,32 @@
+/* posts module patch - theme */
+.post {
+	background-color: #aaaaaa;
+}
+.post-tags a,
+.post-tags a:hover,
+.post-tags a:visited,
+.post-date a,
+.post-date a:hover,
+.post-date a:visited,
+.post-title a,
+.post-title a:hover,
+.post-title a:visited {
+	color: #000000;
+}
+
+.page {
+	background-color: #333333;
+}
+.page a:link,
+.page a:hover,
+.page a:visited {
+	color: #ffffff;
+}
+.current-page {
+	background-color: #888888;
+}
+.current-page a:link,
+.current-page a:hover,
+.current-page a:visited {
+	color: #111111;
+}

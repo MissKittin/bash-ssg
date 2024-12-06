@@ -1,0 +1,6 @@
+# templates module configuration
+templates__template='template-default' # from modules/templates or database/templates
+
+# templates module - current template configuration (template.rc)
+template__html_lang='en'               # <html lang="${templates__html_lang}">
+template__site_title='Bash SSG'        # <title>, always use templates__html_title="My title - ${template__site_title}"

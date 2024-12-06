@@ -9,7 +9,10 @@ If you want include other files, use `static` module.
 
 # Resources
 This template supports the following modules:
-* posts
+* posts  
+	**hint:** you can overwrite the post div HTML code by creating an `template-post-box.rc` file in the post directory (see `resources/posts-content.rc`) but be careful with this because you may break it  
+	**hint:** you can overwrite the plugin divs HTML code by creating an `template-plugin-box.rc` file in the post directory (see `resources/posts-content.rc`) but be careful with this because you may break it
+* posts-arch
 * posts-tags
 
 # Patching template

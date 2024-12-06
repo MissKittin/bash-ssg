@@ -1,0 +1,5 @@
+# templates module - current template configuration
+template__generated_assets_directory='assets/' # must be empty or with slash at the end
+template__html_lang=''                         # <html lang="${templates__html_lang}"> (overwritten)
+template__html_title=''                        # <title>${templates__html_title}</title> (overwritten)
+template__site_title=''                        # stores the default page title

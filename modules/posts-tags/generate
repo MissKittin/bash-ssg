@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
-# post-tags generator module
+# Tag list generator module
+__module_name__='posts-tags'
 
 # defaults variables
+	posts__dbdir='posts'
 	. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
 	. "${0%/*}/defaults.rc.d/posts-tags.rc"
 
@@ -12,8 +14,8 @@
 	[ "${posts_tags__generated_directory}" = '' ] && posts_tags__generated_directory='tag'
 
 # directory in database
-	if [ ! -e "${SSG__database}/posts" ]; then
-		echo '"posts" directory not found in database'
+	if [ ! -e "${SSG__database}/${posts__dbdir}" ]; then
+		echo '"'"${posts__dbdir}"'" directory not found in database'
 		exit 1
 	fi
 
@@ -22,9 +24,9 @@
 	{
 		if [ ! "${1}" = 'noTitleLink' ]; then  # for post metadata
 			. "${post}/meta.rc"
-			template_no_title_link='false'
+			template__no_title_link='false'
 		else
-			template_no_title_link='true'
+			template__no_title_link='true'
 		fi
 
 		if [ -e "${post}/tags" ]; then
@@ -35,20 +37,24 @@
 				posts__post_tags="${posts__post_tags} #${tag##*/}"
 			done
 			posts__post_tags="${posts__post_tags#?}"
-			unset tag
+			unset 'tag'
 		fi
 
-		if ! template__get_part "${defaults__template}" 'resource' 'posts-content'; then
-			echo "error: template ${defaults__template} does not provide posts-content.rc" >&2
+		if ! templates__current_get_part 'resource' 'posts-content'; then
+			echo "error: template ${templates__template} does not provide posts-content.rc" >&2
 		fi
 
-		unset posts__post_title; unset posts__post_date; unset posts__post_tags
-		unset template_no_title_link
+		unset 'posts__post_title'
+		unset 'posts__post_date'
+		unset 'posts__post_id'
+		unset 'posts__post_tags'
+
+		unset 'template__no_title_link'
 	}
 
 # database processing - read all tags
-	for post in ${SSG__database}/posts/public_*; do
-		[ "${post}" = "${SSG__database}/posts/public_*" ] && break
+	for post in ${SSG__database}/${posts__dbdir}/public_*; do
+		[ "${post}" = "${SSG__database}/${posts__dbdir}/public_*" ] && break
 		for tag in ${post}/tags/*; do
 			[ "${tag}" = "${post}/tags/*" ] && break
 			posts__tag_list="${posts__tag_list} ${tag##*/}"
@@ -57,15 +63,30 @@
 	[ ! "${posts__tag_list}" = '' ] && posts__tag_list="$(echo -n "${posts__tag_list}" | tr ' ' '\n' | sort -u)" # sort tag list
 
 # tag list processing
+	posts_tags__generate_tag_list()
+	{
+		local template__html_headers="${posts_tags__list_html_headers}"
+		posts_tags__html_title
+		echo -n "${posts_tags__list_header_content}"
+		templates__current_get_part 'top'
+
+		if ! templates__current_get_part 'resource' 'tags-list'; then
+			echo "error: template ${templates__template} does not provide tags-list.rc" >&2
+		fi
+
+		templates__current_get_part 'bottom'
+		echo -n "${posts_tags__list_footer_content}"
+	}
 	[ ! -e "${SSG__generated}/${posts_tags__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_tags__generated_directory}"
-
-	template__get_part "${defaults__template}" 'top' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
-
-	if ! template__get_part "${defaults__template}" 'resource' 'tags-list' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"; then
-		echo "error: template ${defaults__template} does not provide tags-list.rc"
+	if "${posts_tags__enable_tag_lists}"; then
+		if "${posts_tags__parallel_rendering}"; then
+			posts_tags__generate_tag_list >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
+		else
+			posts_tags__generate_tag_list >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
+		fi
+	else
+		echo 'Tag list generation is disabled'
 	fi
-
-	template__get_part "${defaults__template}" 'bottom' >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 # tag listings processing
 	if [ ! "${posts__tag_list}" = '' ]; then
@@ -74,34 +95,38 @@
 			echo " Processing page ${1}"
 
 			local post
-			local renderedPageDir="${SSG__generated}/${posts_tags__generated_directory}/${tag}/${1}" # cache
 			local currentPageNumber="${1}" # for template
-			local template__html_title="${posts_tags__list_html_title}"
+			local template__html_headers="${posts_tags__listing_html_headers}"
+			local template__html_title; posts_tags__list_html_title
+
+			# cache
+			if [ "${currentPageNumber}" = '1' ]; then
+				local renderedPageDir="${SSG__generated}/${posts_tags__generated_directory}/${tag}"
+			else
+				local renderedPageDir="${SSG__generated}/${posts_tags__generated_directory}/${tag}/${1}"
+			fi
 
 			[ ! -e "${renderedPageDir}" ] && mkdir -p "${renderedPageDir}"
 
-			template__get_part "${defaults__template}" 'top' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			echo -n "${posts_tags__listing_header_content}" >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			templates__current_get_part 'top' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			for post in ${2}; do
 				postName="${post##*/}"
 				echo "  Adding post ${postName##*_}"
-				unset postName
+				unset 'postName'
 
 				local renderedPost="${post##*_}"
 				generatePostBox >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-				unset renderedPost
+				unset 'renderedPost'
 			done
 
-			if ! template__get_part "${defaults__template}" 'resource' 'tags-pages' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"; then
-				echo "error: template ${defaults__template} does not provide tags-pages.rc"
+			if ! templates__current_get_part 'resource' 'tags-pages' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+				echo "error: template ${templates__template} does not provide tags-pages.rc"
 			fi
 
-			template__get_part "${defaults__template}" 'bottom' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-
-			unset template__html_title
-			unset currentPageNumber
-			unset renderedPageDir
-			unset post
+			templates__current_get_part 'bottom' >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			echo -n "${posts_tags__listing_footer_content}" >> "${renderedPageDir}/${defaults__default_file_name}${defaults__default_file_extension}"
 		}
 
 		for tag in ${posts__tag_list}; do
@@ -112,19 +137,30 @@
 			posts_tags__current_page_indicator='1'
 
 			posts_tags__counted_posts='0'
-			for post in $(find ${SSG__database}/posts/public_* -type f | grep '/tags/' | grep "${tag}"); do
+			posts_tags__counted_posts_find="$(find ${SSG__database}/${posts__dbdir}/public_* -type f -path "*/tags/${tag}")" # cache
+			for post in ${posts_tags__counted_posts_find}; do
 				posts_tags__counted_posts="$((posts_tags__counted_posts+1))"
 			done
-			posts_tags__counted_pages="$(echo "${posts_tags__counted_posts} ${posts__posts_per_page}" | awk '{print ($1/$2)+0.9}' | awk '{printf "%.0d", $1}')"
-			unset post
-			unset posts_tags__counted_posts
+			posts_tags__counted_pages="$(awk '
+				BEGIN {
+					printf \
+						"%.0d", \
+						('"${posts_tags__counted_posts}"'/'"${posts__posts_per_page}"')+0.9 \
+				}
+			')"
+			unset 'post'
+			unset 'posts_tags__counted_posts'
 
-			for post in $(find ${SSG__database}/posts/public_* -type f | grep '/tags/' | grep "${tag}" | tac); do
+			for post in $(echo "${posts_tags__counted_posts_find}" | tac); do
 				post="$(echo -n "${post}" | sed 's|/tags/'"${tag}"'||g')"
 				posts_tags__list="${posts_tags__list} ${post}"
 
 				if [ "${posts_tags__list_limit_indicator}" = "${posts__posts_per_page}" ]; then
-					posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+					if "${posts_tags__parallel_rendering}"; then
+						posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}" &
+					else
+						posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+					fi
 
 					posts_tags__list=''
 					posts_tags__list_limit_indicator='1'
@@ -133,26 +169,31 @@
 					posts_tags__list_limit_indicator="$((posts_tags__list_limit_indicator+1))"
 				fi
 			done
-			[ ! "${posts_tags__list}" = '' ] && posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+			[ ! "${posts_tags__list}" = '' ] && if "${posts_tags__parallel_rendering}"; then
+				posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}" &
+			else
+				posts_tags__generate_list "${posts_tags__current_page_indicator}" "${posts_tags__list}"
+			fi
 
-			mv "${SSG__generated}/${posts_tags__generated_directory}/${tag}/1/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${posts_tags__generated_directory}/${tag}/${defaults__default_file_name}${defaults__default_file_extension}"
-			rmdir "${SSG__generated}/${posts_tags__generated_directory}/${tag}/1"
-
-			unset post
-			unset posts_tags__counted_pages
-			unset posts_tags__current_page_indicator
-			unset posts_tags__list_limit_indicator
-			unset posts_tags__list
+			unset 'post'
+			unset 'posts_tags__counted_pages'
+			unset 'posts_tags__current_page_indicator'
+			unset 'posts_tags__list_limit_indicator'
+			unset 'posts_tags__list'
 		done
 
-		unset posts_tags__generate_list
-		unset tag
+		"${posts_tags__parallel_rendering}" && wait
+
+		unset 'posts_tags__generate_list'
+		unset 'tag'
 	fi
 
 # home page processing
-	if [ "${defaults__home_module}" = 'posts-tags' ]; then
-			echo "This is default module - generating home page"
-			mv "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+	[ "${defaults__home_module}" = "${__module_name__}" ] && if "${posts_tags__enable_tag_lists}"; then
+		echo 'This is default module - generating home page'
+		mv "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+	else
+		'Error: posts_tags__enable_tag_lists is false - this module cannot be the default module'
 	fi
 
 exit 0

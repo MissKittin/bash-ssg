@@ -1,0 +1,6 @@
+/* posts-tags module patch */
+.taglink {
+	margin: 0;
+	display: block !important;
+	text-align: center;
+}

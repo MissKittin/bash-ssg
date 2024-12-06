@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-# minificator module
+# minifier module
+__module_name__='z-y_minify'
 
 # defaults variables
 	. "${0%/*}/defaults.rc.d/minify.rc"
@@ -7,29 +8,24 @@
 # variables
 	. "${SSG__lib}/import-defaults.rc"
 
-# minify html
-	if "${minify__process_html}"; then
+# functions
+	minify_html()
+	{
 		find ${SSG__generated} -name *.html | while read file; do
 			echo "Processing $(echo -n "${file}" | sed 's|'"${SSG__generated}"'||g')"
 			sed -i -e ':a;N;$!ba;s/>\s*</></g' "${file}" # https://stackoverflow.com/questions/12376368/minify-html-files-in-text-html-templates
 		done
-	else
-		echo 'HTML minification is disabled in settings'
-	fi
-
-# minify css
-	if "${minify__process_css}"; then
+	}
+	minify_css()
+	{
 		find ${SSG__generated} -name *.css | while read file; do
 			echo "Processing $(echo -n "${file}" | sed 's|'"${SSG__generated}"'||g')"
 			sed -i -e 's/^[ \t]*//g; s/[ \t]*$//g; s/\([:{;,]\) /\1/g; s/ {/{/g; s/\/\*.*\*\///g; /^$/d' "${file}" # https://gist.github.com/dominicmartineau/5483359
 			sed -i -e :a -e '$!N; s/\n\(.\)/\1/; ta' "${file}"
 		done
-	else
-		echo 'CSS minification is disabled in settings'
-	fi
-
-# minify js
-	if "${minify__process_js}"; then
+	}
+	minify_js()
+	{
 		find ${SSG__generated} -name *.js | while read file; do
 			echo "Processing $(echo -n "${file}" | sed 's|'"${SSG__generated}"'||g')"
 			#sed -i -E 's@[[:blank:]]*(//|#).*@@;T;/./!d' "${file}" # https://unix.stackexchange.com/questions/383960/sed-stripping-comments-inline
@@ -38,8 +34,44 @@
 			sed -i -e "s/^[ \t]*//g" -e "/^$/d" "${file}" # https://stackoverflow.com/questions/12376368/minify-html-files-in-text-html-templates
 			sed -i ':a;N;$!ba;s/\n/ /g' "${file}" # https://stackoverflow.com/questions/1251999/how-can-i-replace-a-newline-n-using-sed
 		done
+	}
+
+# minify html
+	if "${minify__process_html}"; then
+		if "${minify__parallel_rendering}"; then
+			minify_html &
+		else
+			minify_html
+		fi
+	else
+		echo 'HTML minification is disabled in settings'
+	fi
+
+# minify css
+	if "${minify__process_css}"; then
+		if "${minify__parallel_rendering}"; then
+			minify_css &
+		else
+			minify_css
+		fi
+	else
+		echo 'CSS minification is disabled in settings'
+	fi
+
+# minify js
+	if "${minify__process_js}"; then
+		if "${minify__parallel_rendering}"; then
+			minify_js &
+		else
+			minify_js
+		fi
 	else
 		echo 'JS minification is disabled in settings'
 	fi
+
+"${minify__parallel_rendering}" && wait
+
+# you can't do that
+	[ "${defaults__home_module}" = "${__module_name__}" ] && echo 'Error: this module cannot be the default module' && exit 1
 
 exit 0

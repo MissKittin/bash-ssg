@@ -1,0 +1,10 @@
+# posts-rss module configuration
+posts_rss__url=''                                  # e.g. 'http://example.com' or "<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').'://'.\$_SERVER['HTTP_HOST']; ?>" ; disabled if empty
+posts_rss__force_enable='false'                    # ignore empty ${posts_rss__url}
+posts_rss__generated_directory='post/'             # must be empty or with slash at the end
+posts_rss__file='feed.xml'
+posts_rss__header_content=''                       # add at the beginning of the file eg. "<?php header('Content-Type: application/rss+xml'); ?>"
+posts_rss__footer_content=''                       # add at the end of the file eg. '<?php my_function(); ?>'
+posts_rss__title="${template__site_title} - Posts" # <title>
+posts_rss__link="${posts_rss__url}${defaults__url_prefix}/${posts_rss__generated_directory}${posts_rss__file}" # <link>
+posts_rss__lang="${template__html_lang}"           # <lang> (variable from templates module)

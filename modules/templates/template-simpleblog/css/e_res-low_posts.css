@@ -1,0 +1,12 @@
+/* posts module patch - low resolution */
+@media only screen and (max-width: 650px) {
+	.post,
+	#pages {
+		width: 420px;
+	}
+
+	.page {
+		width: 25px;
+		height: 25px;
+	}
+}

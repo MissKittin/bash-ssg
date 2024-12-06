@@ -2,5 +2,12 @@
 for includeModule in ${SSG__modules}/*/include.rc; do
 	[ "${includeModule}" = "${SSG__modules}/*/include.rc" ] && break
 	. "${includeModule}"
+
+	includeModuleDefaults="${includeModule%/*}"
+	for includeModule in ${includeModuleDefaults}/defaults.rc.d/*.rc; do
+		[ "${includeModule}" = "${includeModuleDefaults}/defaults.rc.d/*.rc" ] && break
+		. "${includeModule}"
+	done
 done
-unset includeModule
+unset 'includeModule'
+unset 'includeModuleDefaults'

@@ -1,0 +1,14 @@
+/* posts module patch - mobile device resolution */
+@media only screen and (max-width: 850px) {
+	.post {
+		width: 500px;
+	}
+
+	#pages {
+		width: 600px;
+	}
+	.page {
+		width: 30px;
+		height: 30px;
+	}
+}

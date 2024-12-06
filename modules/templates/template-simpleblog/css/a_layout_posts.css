@@ -1,0 +1,56 @@
+/* posts module patch */
+.post {
+	margin: 0 auto;
+}
+.post-tags {
+	float: left;
+	font-style: italic;
+}
+.post-tags a,
+.post-tags a:hover,
+.post-tags a:visited,
+.post-date a,
+.post-date a:hover,
+.post-date a:visited,
+/**/
+.page a:link,
+.page a:hover,
+.page a:visited {
+	text-decoration: none;
+}
+.post-date {
+	text-align: right;
+}
+.post-title {
+	font-size: 1.5em;
+	margin-top: 0.83em;
+	margin-bottom: 0.83em;
+	margin-left: 0;
+	margin-right: 0;
+	font-weight: bold;
+}
+.post-title a,
+.post-title a:hover,
+.post-title a:visited {
+	text-decoration: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+#pages {
+	margin: 0 auto;
+	padding: 0;
+	overflow: auto;
+}
+.page {
+	float: left;
+	border-radius: 50%;
+	justify-content: center;
+	display: flex;
+	align-items: center;
+}
+.current-page a:link,
+.current-page a:hover,
+.current-page a:visited {
+	text-decoration: none;
+	font-weight: bold;
+}

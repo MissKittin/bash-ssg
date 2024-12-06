@@ -3,3 +3,11 @@ cat << EOF
 	<meta name="robots" content="noindex,nofollow">
 	<link rel="shortcut icon" href="${defaults__url_prefix}/assets/favicon.ico">
 EOF
+
+# you can implement CSP here, but it won't be easy
+#cat << EOF
+#	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+#EOF
+
+# add link to RSS feed if posts-rss module is active
+[ ! "${posts_rss__url}" = '' ] && echo '<link rel="alternate" type="application/rss+xml" title="'"${posts_rss__title}"'" href="'"${posts_rss__link}"'">'

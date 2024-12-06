@@ -1,17 +1,16 @@
-/* default template - desktop version */
+/* desktop version */
 #header {
 	margin: 5px;
 }
-
 #headlinks {
 	padding: 5px;
 	width: 100px;
 }
 #page-content {
 	margin-left: 115px;
+	margin-bottom: 5px;
 	padding-left: 10px;
 	padding-bottom: 10px;
-	margin-bottom: 5px;
 }
 #footer {
 	margin-left: 5px;

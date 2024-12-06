@@ -1,3 +1,8 @@
 # gzip module configuration
 gzip__compression='' # [1-9] or empty - disabled
+gzip__process_all='true'
+gzip__process_html="${gzip__process_all}"
+gzip__process_css="${gzip__process_all}"
+gzip__process_js="${gzip__process_all}"
+gzip__process_xml="${gzip__process_all}"
 gzip__remove_gz_extension='false' # .gz or not .gz

@@ -1,0 +1,6 @@
+/* low resolution - theme */
+@media only screen and (max-width: 650px) {
+	#page-content {
+		background-color: #999999;
+	}
+}

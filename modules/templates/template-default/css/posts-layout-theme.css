@@ -1,0 +1,18 @@
+/* posts module patch - layout - theme */
+.post,
+.page {
+	background-color: #222222;
+}
+.post-title a,
+.post-title a:hover,
+.post-title a:visited,
+/**/
+.page a,
+.page a:hover,
+.page a:visited {
+	color: #ffffff;
+}
+
+.current-page {
+	background-color: #444444;
+}

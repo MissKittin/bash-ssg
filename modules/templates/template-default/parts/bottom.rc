@@ -5,9 +5,9 @@ echo '</div>'
 echo '</div>'
 
 # footer
-if [ -e "${SSG__database}/templates/footer.rc" ]; then
+if [ -e "${SSG__database}/${templates__dbdir}footer.rc" ]; then
 	echo '<div id="footer">'
-		. "${SSG__database}/templates/footer.rc"
+		. "${SSG__database}/${templates__dbdir}footer.rc"
 	echo '</div>'
 fi
 

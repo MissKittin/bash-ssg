@@ -1,0 +1,7 @@
+# insert your own plugin div code
+# !!! RENAME THIS FILE TO template-plugin-box.rc
+# for template_default
+
+echo '<div class="post post-plugin" style="background-color: #ff0000;">'
+	. "${post_plugin}"
+echo '</div>'

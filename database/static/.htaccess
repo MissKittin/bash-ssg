@@ -1,7 +1,7 @@
-ErrorDocument 400 /page/error/400
-ErrorDocument 403 /page/error/403
-ErrorDocument 404 /page/error/404
-ErrorDocument 500 /page/error/500
-ErrorDocument 502 /page/error/502
-ErrorDocument 503 /page/error/503
-ErrorDocument 504 /page/error/504
+ErrorDocument 400 /page/error/400/index.html
+ErrorDocument 403 /page/error/403/index.html
+ErrorDocument 404 /page/error/404/index.html
+ErrorDocument 500 /page/error/500/index.html
+ErrorDocument 502 /page/error/502/index.html
+ErrorDocument 503 /page/error/503/index.html
+ErrorDocument 504 /page/error/504/index.html

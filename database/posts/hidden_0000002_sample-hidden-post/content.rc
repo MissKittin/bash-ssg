@@ -3,9 +3,22 @@ cat << EOF
 	<p style="text-align: center;">This is the hidden sample post.</p>
 	<p>
 		Post directory name:
-		<span style="font-weight: bold;">hidden_0000002_sample-hidden-post</span>,
-		where <span style="font-weight: bold;">hidden</span> notices script that post is published but is not indexed in the post list and tag lists
-		<span style="font-weight: bold;">0000002</span> is queue number
-		and <span style="font-weight: bold;">sample-hidden-post</span> is post url name.
+		<span style="font-weight: bold;">${post##*/}</span>,
+		where <span style="font-weight: bold;">hidden</span> notices script that post is published but is not indexed in the post list and tag lists,
+		<span style="font-weight: bold;">${posts__post_id}</span> is queue number,
+		<span style="font-weight: bold;">${posts__post_id_class}</span> is the (unique?) name of the post div class,
+		and <span style="font-weight: bold;">${post##*_}</span> is post url name.
+	</p>
+	<p>
+		Post URL: <a href="${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}">${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}</a><br>
+		Use this path to refer to files copied with the <span style="font-weight: bold;">posts__copy_file</span> function
 	</p>
 EOF
+
+# instead of pure html you can use something else, like this
+#pandoc --from markdown --to html5 --no-highlight "${post}/content.md"
+# or like this
+#pandoc --from markdown --to html5 --no-highlight << EOF
+## Header
+#Content
+#EOF

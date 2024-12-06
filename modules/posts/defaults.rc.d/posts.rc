@@ -1,7 +1,31 @@
 # posts module configuration
 posts__generated_page_directory='page/' # must be empty or with slash at the end
 posts__generated_post_directory='post/' # must be empty or with slash at the end
+posts__posts_arch_integration='false'   # render date as link e.g. "${defaults__url_prefix}/arch/" ('false' - disabled)
+posts__posts_tags_integration='false'   # render tags as links e.g. "${defaults__url_prefix}/tag/" ('false' - disabled)
+posts__enable_post_lists='true'         # generate lists with posts
 posts__no_first_page_mode='false'       # use url /post instead of /post/1 (set the two above values to e.g. 'post/')
 posts__posts_per_page='5'
-posts__list_html_title="Posts - ${defaults__html_title}"
+posts__list_html_headers=''             # add code to <head> section in post list
 posts__label_not_found='<h1 style="text-align: center; display: block;">No posts found</h1>'
+posts__parallel_rendering='false'       # speed up post rendering
+posts__list_header_content=''           # add at the beginning of the post list eg. "<?php header('Content-Type: application/rss+xml'); ?>"
+posts__list_footer_content=''           # add at the beginning of the post list eg. '<?php my_function(); ?>'
+posts__post_header_content=''           # add at the beginning of the seletcted post eg. "<?php header('Content-Type: application/rss+xml'); ?>"
+posts__post_footer_content=''           # add at the beginning of the seletcted post eg. '<?php my_function(); ?>'
+posts__not_found_header_content=''      # add at the beginning of the no posts found eg. "<?php header('Content-Type: application/rss+xml'); ?>"
+posts__not_found_footer_content=''      # add at the beginning of the no posts found eg. '<?php my_function(); ?>'
+
+# ${template__site_title} is from templates module
+posts__post_html_title()
+{
+	[ ! "${posts__post_title}" = '' ] && template__html_title="${posts__post_title} - ${template__site_title}"
+}
+posts__list_html_title()
+{
+	if [ "${currentPageNumber}" = '1' ]; then
+		template__html_title="Posts - ${template__site_title}"
+	else
+		template__html_title="Posts - Page ${currentPageNumber} - ${template__site_title}"
+	fi
+}

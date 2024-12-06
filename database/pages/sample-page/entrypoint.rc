@@ -1,4 +1,11 @@
 # write all script names to be rendered
 
-# render index.rc to default file
+# render index.rc to default file (first page)
 pages__render_script 'index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+
+# render index2.rc to default file in page-2 subdirectory (second page)
+pages__render_script 'index2.rc' "${defaults__default_file_name}${defaults__default_file_extension}" 'page-2'
+
+# copy additional files or directories (pages__copy_file input-file-or-dir output-file-or-dir)
+#pages__copy_file 'assets/square.css' 'square.css' # copy one file to generated/page/sample-page directory
+#pages__copy_file 'assets' 'assets' # copy the whole directory to generated/page/sample-page

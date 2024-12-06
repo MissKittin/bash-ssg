@@ -2,11 +2,14 @@
 cat << EOF
 	<!-- you can apply post style via javascript -->
 	<script>
-		window.addEventListener('DOMContentLoaded', function(){
+		document.addEventListener('DOMContentLoaded', function(){
 			var post=document.getElementsByClassName('post');
-			for(var i=0; i<=post.length; i++)
-				if((post[i].children[0].innerHTML == '${posts__post_tags}') && (post[i].children[1].innerHTML == '${posts__post_date}') && (post[i].children[2].innerHTML == '${posts__post_title}'))
-				{
+			for(var i=0; i<post.length; i++)
+				if(
+					(post[i].children[0].innerHTML === '${posts__post_tags}') &&
+					(post[i].children[1].innerHTML === '${posts__post_date}') &&
+					(post[i].children[2].innerHTML === '${posts__post_title}'.replace('&numero;', '№'))
+				){
 					// write your style
 					post[i].style.background='rgba(255, 0, 0, 0.2)'; // post box
 					post[i].children[0].style.color='#00aa00'; // tags
@@ -15,20 +18,37 @@ cat << EOF
 
 					break; // respect your visitor
 				}
-		});
+		}, false);
 	</script>
+
+	<!-- applying styles via template__html_headers wont work on the post list, you need to do it here -->
+	<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}/style.css">
 
 	<p style="text-align: center;">This is the sample post.</p>
 	<p>
 		Post directory name:
-		<span style="font-weight: bold;">public_0000001_sample-post</span>,
-		where <span style="font-weight: bold;">public</span> notices script that post is published
-		<span style="font-weight: bold;">0000001</span> is queue number
-		and <span style="font-weight: bold;">sample-post</span> is post url name.
+		<span style="font-weight: bold;">${post##*/}</span>,
+		where <span style="font-weight: bold;">public</span> notices script that post is published,
+		<span style="font-weight: bold;">${posts__post_id}</span> is queue number,
+		<span style="font-weight: bold;">${posts__post_id_class}</span> is the (unique?) name of the post div class,
+		and <span style="font-weight: bold;">${post##*_}</span> is post url name.
+	</p>
+	<p>
+		Post URL: <a href="${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}">${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}</a><br>
+		Use this path to refer to files copied with the <span style="font-weight: bold;">posts__copy_file</span> function
 	</p>
 	<p>
 		Tags: create <span style="font-weight: bold;">tags</span> directory in post's dir,
-		and create empty file with tag name (without #).
+		and create empty file with tag name (without # and whitespaces).
 	<p>
 	<p>Click to the post title and check page source for <span style="font-weight: bold;">&lt;!-- this code will be displayed in this posts page header --&gt;</span></p>
+	<p id="post-green-font">If this text is green, <span style="font-weight: bold;">posts__copy_file</span> function works.</p>
 EOF
+
+# instead of pure html you can use something else, like this
+#pandoc --from markdown --to html5 --no-highlight "${post}/content.md"
+# or like this
+#pandoc --from markdown --to html5 --no-highlight << EOF
+## Header
+#Content
+#EOF

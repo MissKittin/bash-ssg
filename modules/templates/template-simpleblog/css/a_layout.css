@@ -1,0 +1,36 @@
+/* basic styles - layout */
+	#headlinks {
+		margin: 0 auto;
+		overflow: auto;
+	}
+	#headlinks a:link,
+	#headlinks a:hover,
+	#headlinks a:visited {
+		text-decoration: none;
+	}
+	.headlink {
+		justify-content: center;
+		display: flex;
+		align-items: center;
+		float: right;
+		text-align: center;
+	}
+
+	#page-content {
+		margin: 0 auto;
+		overflow-wrap: break-word;
+	}
+
+	#footer {
+		margin: 0 auto;
+		text-align: right;
+	}
+
+/* miscellaneous styles - layout */
+	.quotation {
+		text-align: center;
+		font-style: italic;
+	}
+	img, video {
+		max-width: 100%;
+	}

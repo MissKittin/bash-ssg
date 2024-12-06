@@ -1,13 +1,15 @@
-/* default template - layout */
+/* layout */
 body {
 	margin: 0;
 	padding: 0;
-	background-color: #000000;
-	color: #ffffff;
 }
-a, a:hover, a:visited {
-	color: #00ffff;
+a,
+a:hover,
+a:visited {
 	text-decoration: none;
+}
+#page-main-box {
+	overflow: auto;
 }
 #page-content h1 {
 	display: inline-block;
@@ -17,7 +19,6 @@ a, a:hover, a:visited {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border-bottom: 1px solid #ff0000;
 }
 
 #headlinks {
@@ -28,7 +29,8 @@ a, a:hover, a:visited {
 	content: '\A';
 	white-space: pre;
 }
+
 #page-content {
-	border-left: 1px solid #ff0000;
 	overflow: auto;
+	overflow-wrap: break-word;
 }

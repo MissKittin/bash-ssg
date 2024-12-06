@@ -4,5 +4,5 @@ if [ -e "${SSG__database}/defaults.rc.d" ]; then
 		[ "${includeDefaults}" = "${SSG__database}/defaults.rc.d/*.rc" ] && break
 		. "${includeDefaults}"
 	done
-	unset includeDefaults
+	unset 'includeDefaults'
 fi

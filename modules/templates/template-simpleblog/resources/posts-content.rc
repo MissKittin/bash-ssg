@@ -1,0 +1,64 @@
+# template resource for posts module
+
+# post title link (preconfiguration)
+if [ ! "${posts__post_title}" = '' ]; then
+	"${template__no_title_link}" && \
+		local posts__post_title="${posts__post_title}" || \
+		local posts__post_title='<a href="'"${defaults__url_prefix}/${posts__generated_post_directory}${renderedPost}"'">'"${posts__post_title}"'</a>'
+fi
+
+# post box
+if [ -e "${post}/template-post-box.rc" ]; then
+	. "${post}/template-post-box.rc"
+else
+	[ ! "${posts__post_id}" = '' ] && posts__post_id_class=" post-id-${posts__post_id}"
+	echo '<div class="post'"${posts__post_id_class}"'">'
+		[ ! "${posts__post_tags}" = '' ] && if [ ! "${posts__posts_tags_integration}" = 'false' ]; then
+			echo '<div class="post-tags">'
+			for tag in ${posts__post_tags}; do
+				echo '<a href="'${posts__posts_tags_integration}"${tag##*#}"'">'"${tag}"'</a>'
+			done
+			unset 'tag'
+			echo '</div>'
+		else
+			echo '<div class="post-tags">'"${posts__post_tags}"'</div>'
+		fi
+		[ ! "${posts__post_date}" = '' ] && if [ ! "${posts__posts_arch_integration}" = 'false' ]; then
+			echo '<div class="post-date">'
+			for posts__posts_arch_integration_date in ${post}/arch_*; do
+				break
+			done
+			if [ "${posts__posts_arch_integration_date}" = "${post}/arch_*" ]; then
+				echo "${posts__post_date}"
+			else
+				posts__posts_arch_integration_date="${posts__posts_arch_integration_date##*/}"
+				posts__posts_arch_integration_date="${posts__posts_arch_integration_date#*_}"
+				echo '<a href="'"${posts__posts_arch_integration}${posts__posts_arch_integration_date}"'">'"${posts__post_date}"'</a>'
+				unset 'posts__posts_arch_integration_date'
+			fi
+			echo '</div>'
+		else
+			echo '<div class="post-date">'"${posts__post_date}"'</div>'
+		fi
+		[ ! "${posts__post_title}" = '' ] && echo '<div class="post-title">'"${posts__post_title}"'</div>'
+		. "${post}/content.rc"
+	echo '</div>'
+	unset 'posts__post_id_class'
+fi
+
+# plugin boxes (only on post view)
+if "${template__no_title_link}"; then
+	for post_plugin in ${SSG__database}/posts-plugins/*/plugin.rc; do
+		[ "${post_plugin}" = "${SSG__database}/posts-plugins/*/plugin.rc" ] && break
+		if [ ! -e "${post_plugin%/*}/plugin-disabled" ]; then
+			if [ -e "${post}/template-plugin-box.rc" ]; then
+				. "${post}/template-plugin-box.rc"
+			else
+				echo '<div class="post post-plugin">'
+					. "${post_plugin}"
+				echo '</div>'
+			fi
+		fi
+	done
+	unset 'post_plugin'
+fi

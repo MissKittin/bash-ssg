@@ -1,0 +1,9 @@
+# create an pre-generate.rc.d directory and put your scripts there
+# they will be included before the page is generated
+
+for hook in ${SSG__database}/generate-hooks/pre-generate.rc.d/*.rc; do
+	[ "${hook}" = "${SSG__database}/generate-hooks/pre-generate.rc.d/*.rc" ] && break
+	echo "  -> ${hook##*/}"
+	. "${hook}"
+done
+unset 'hook'

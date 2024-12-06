@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Bash Static Site Generator - entry point
-# 2021 MissKittin@GitHub
+# 2021 2024 MissKittin@GitHub
 # Required tools for entrypoint: date dirname readlink tr sort cat mv rm
 
 echo ' :: Checking required tools'
@@ -14,12 +14,12 @@ for tool in 'dirname' 'readlink'; do
 		exit 1
 	fi
 done
-unset tool
 
 # global variables (you can rewrite in database/defaults.rc.d)
 	export SSG__root="$(dirname "$(readlink -f "${0}")")"
 	export SSG__modules="${SSG__root}/modules"
 	export SSG__database="${SSG__root}/database"
+	export SSG__user_modules="${SSG__database}/modules"
 	export SSG__generated="${SSG__root}/generated"
 	export SSG__lib="${SSG__root}/lib"
 	[ -d "${SSG__root}/bin" ] && export PATH="${SSG__root}/bin:${PATH}"
@@ -47,8 +47,9 @@ unset tool
 		echo ' :: Checking required tools'
 		moduleRequiredTools='date tr sort cat mv rm' # for entrypoint
 
-		for module in ${SSG__modules}/*; do
-			[ "${module}" = "${SSG__modules}/*" ] && break
+		for module in ${SSG__modules}/* ${SSG__user_modules}/*; do
+			[ "${module}" = "${SSG__modules}/*" ] && continue
+			[ "${module}" = "${SSG__user_modules}/*" ] && break
 			[ -e "${module}/command-stack" ] && check_disabled_modules "${module##*/}" "${defaults__disabled_modules}" && moduleRequiredTools="${moduleRequiredTools} $(cat "${module}/command-stack")"
 		done
 
@@ -65,21 +66,21 @@ unset tool
 					echo -n 'Continue anyway? (y/[N]) '
 					read answer
 					[ ! "${answer}" = 'y' ] && exit 1
-					unset answer
+					unset 'answer'
 					break
 				fi
 			done
 		fi
 
-		unset moduleRequiredTools
-		unset tool
+		unset 'moduleRequiredTools'
+		unset 'tool'
 	fi
 
 # module dependencies check
 	if "${entrypointCheckModules}"; then
 		echo ' :: Checking modules dependencies'
-		for module in ${SSG__modules}/*; do
-			[ "${module}" = "${SSG__modules}/*" ] && break
+		for module in ${SSG__modules}/* ${SSG__user_modules}/*; do
+			[ "${module}" = "${SSG__modules}/*" ] && continue
 			if [ -e "${module}/dependencies" ] && check_disabled_modules "${module##*/}" "${defaults__disabled_modules}"; then
 				echo -n "Checking module ${module##*/}"
 				if ! \
@@ -94,7 +95,7 @@ unset tool
 					echo -n 'Continue anyway? (y/[N]) '
 					read answer
 					[ ! "${answer}" = 'y' ] && exit 1
-					unset answer
+					unset 'answer'
 					break
 				else
 					echo ' [ OK ]'
@@ -103,26 +104,33 @@ unset tool
 		done
 	fi
 
+if [ -e "${SSG__database}/generate-hooks/pre-generate.rc" ]; then
+	echo ' :: Starting pre-generate hook'
+	. "${SSG__database}/generate-hooks/pre-generate.rc"
+fi
+
 # output directory
-	if [ -e "${SSG__generated}" ]; then
-		if "${defaults__archive_old_generated}"; then
-			echo ' :: Archiving previously generated files'
-			mv "${SSG__generated}" "${SSG__generated}-$(date '+%Y%m%d%H%M%S')"
-		else
-			echo ' :: Removing previously generated files'
-			rm -r ${SSG__generated}/* > /dev/null 2>&1
-		fi
+	[ -e "${SSG__generated}" ] && if "${defaults__archive_old_generated}"; then
+		echo ' :: Archiving previously generated files'
+		mv "${SSG__generated}" "${SSG__generated}-$(date '+%Y%m%d%H%M%S')"
+	else
+		echo ' :: Removing previously generated files'
+		rm -r ${SSG__generated}/* > /dev/null 2>&1
 	fi
 
 # modules generators
-	for module in ${SSG__modules}/*; do
-		[ "${module}" = "${SSG__root}/modules/*" ] && echo "No modules installed"
+	for module in ${SSG__modules}/* ${SSG__user_modules}/*; do
+		[ "${module}" = "${SSG__modules}/*" ] && echo 'No modules installed'
 		if [ -x "${module}/generate" ]; then
 			moduleName="${module##*/}"
 			if check_disabled_modules "${moduleName}" "${defaults__disabled_modules}"; then
 				echo " :: Running ${moduleName} module"
 				"${module}/generate"
-				echo " :: ${moduleName} module ended"
+				if [ "$?" = '0' ]; then
+					echo " :: ${moduleName} module ended"
+				else
+					echo " :: ${moduleName} module failed"
+				fi
 
 				if [ -e "${SSG__generated}/.reimport-defaults" ]; then
 					echo ' :: Re-importing defaults variables'
@@ -135,13 +143,22 @@ unset tool
 		fi
 	done
 
+if [ -e "${SSG__database}/generate-hooks/post-generate.rc" ]; then
+	echo ' :: Starting post-generate hook'
+	. "${SSG__database}/generate-hooks/post-generate.rc"
+fi
+
 # default module check
-	if [ "${defaults__home_module}" = '' ] || [ ! -e "${SSG__modules}/${defaults__home_module}" ]; then
+	if [ "${defaults__home_module}" = '' ]; then
+		echo "error: default module '${defaults__home_module}' is not defined"
+		exit 1
+	fi
+	if [ ! -e "${SSG__modules}/${defaults__home_module}" ] && [ ! -e "${SSG__user_modules}/${defaults__home_module}" ]; then
 		echo "error: default module '${defaults__home_module}' not found in modules"
 		exit 1
 	fi
 
 # execution time measurement (2)
-	echo " :: Script executed in $(($(date '+%s')-entrypointStartTime)) seconds"
+	[ ! "${entrypointStartTime}" = '' ] && echo " :: Script executed in $(($(date '+%s')-entrypointStartTime)) seconds"
 
 exit 0

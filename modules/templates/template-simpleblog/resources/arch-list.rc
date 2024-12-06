@@ -1,0 +1,13 @@
+# template resource for posts-arch module
+echo '<div id="taglist">'
+	if [ ! "${post_arch__date_list}" = '' ]; then
+		for date in ${post_arch__date_list}; do
+			echo '<a class="taglink" href="'"${defaults__url_prefix}/${posts_arch__generated_directory}/${date}"'">'
+			posts_arch__format_date_label
+			echo '</a></h1><br>'
+		done
+		unset 'date'
+	else
+		echo "${posts_arch__label_not_found}"
+	fi
+echo '</div>'

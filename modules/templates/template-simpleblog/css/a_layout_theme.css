@@ -1,0 +1,21 @@
+/* basic styles - theme */
+	body {
+		background-color: #aaaaaa;
+	}
+	#headlinks a:link,
+	#headlinks a:hover,
+	#headlinks a:visited {
+		color: #ffffff;
+	}
+	.headlink {
+		background-color: #555555;
+	}
+
+	#page-content {
+		background-color: #888888;
+	}
+
+/* miscellaneous styles - theme */
+	del {
+		color: #666666;
+	}

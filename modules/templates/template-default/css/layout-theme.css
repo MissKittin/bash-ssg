@@ -1,0 +1,18 @@
+/* layout - theme */
+body {
+	background-color: #000000;
+	color: #ffffff;
+}
+a,
+a:hover,
+a:visited {
+	color: #00ffff;
+}
+
+#header {
+	border-bottom: 1px solid #ff0000;
+}
+
+#page-content {
+	border-left: 1px solid #ff0000;
+}

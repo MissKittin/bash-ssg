@@ -1,0 +1,13 @@
+/* low resolution */
+@media only screen and (max-width: 650px) {
+	#headlinks {
+		width: 420px;
+	}
+	#page-content,
+	#footer {
+		width: 460px;
+	}
+	#footer {
+		font-size: 10px;
+	}
+}

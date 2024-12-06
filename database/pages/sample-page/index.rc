@@ -1,38 +1,61 @@
 # set page name
-template__html_title="Sample page - ${defaults__html_title}"
+template__html_title="Sample page 1 of 2 - ${template__site_title}"
 
 # add in headers
 template__html_headers='
 	<!-- if you see this, template__html_headers works -->
-	<link rel="stylesheet" type="text/css" href="'"/${pages__generated_directory}${scriptPath%/*}"'/square.css">
+	<link rel="stylesheet" type="text/css" href="'"${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}"'/square.css">
 '
 
 # page SEO metadata
 template__html_headers="${template__html_headers}"'
-	<meta name="description" content="This is sample page description and CSS square test.">
+	<meta name="description" content="This is sample page description and CSS square test">
 '
 
-# add top template
-template__get_part "${defaults__template}" 'top'
+# you can add code at the beginning of the generated file
+#echo -n "<?php header('Cache-Control: public, max-age=31536000'); ?>"
 
-# write content
+# add top template
+templates__current_get_part 'top'
+
+# write content (standard style)
 cat << EOF
-	<h1>Sample page</h1>
+	<h1>Sample page 1/2 (standard style)</h1>
 	<div>
 		<span style="font-weight: bold;">Variables</span><br>
-		\${entrypoint}="${entrypoint}"<br>
-		\${script}="${script}"<br>
-		\${scriptPath}="${scriptPath}"<br>
-		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath}"<br>
-		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}"<br>
-		/\${pages__generated_directory}\${scriptPath%/*}="/${pages__generated_directory}${scriptPath%/*}"
+		\${entrypoint}="${entrypoint}"<hr>
+		\${script}="${script}"<hr>
+		\${scriptPath}="${scriptPath}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}/\${defaults__default_file_name}\${defaults__default_file_extension}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}/${defaults__default_file_name}${defaults__default_file_extension}"
 	</div>
-	<p>If you see red square above, <span style="font-weight: bold;">pages__copy_file</span> function works.</p>
+	<p>If you see red square below, <span style="font-weight: bold;">pages__copy_file</span> function works.</p>
 	<div id="square"></div>
 EOF
 
-# add bottom template
-template__get_part "${defaults__template}" 'bottom'
+# instead of pure html you can use something else, like this
+#pandoc --from markdown --to html5 --no-highlight "${script%/*}/index.md"
+# or like this
+#pandoc --from markdown --to html5 --no-highlight << EOF
+## Header
+#Content
+#EOF
 
-# copy additional files (if files are in directory, write directory/file.ext in argument)
-pages__copy_file 'square.css'
+# add page selector
+cat << EOF
+	<div id="pages">
+		<div class="page current-page"><a href="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}">1</a></div>
+		<div class="page"><a href="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}/page-2">2</a></div>
+	</div>
+EOF
+
+# add bottom template
+templates__current_get_part 'bottom'
+
+# you can add code at the end of the generated file
+#echo -n "<?php my_function(); ?>"
+
+# copy additional files or directories (pages__copy_file input-file-or-dir output-file-or-dir)
+pages__copy_file 'assets/square.css' 'square.css' # copy one file to generated/page/sample-page directory
+#pages__copy_file 'assets' 'assets' # copy the whole directory to generated/page/sample-page

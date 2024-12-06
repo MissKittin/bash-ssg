@@ -1,15 +1,22 @@
-template__get_part()
+templates__get_part()
 {
 	# imports template.rc from selected ${1}
 
-	if [ -e "${SSG__database}/templates/${1}/template.rc" ]; then
-		local templateLocation="${SSG__database}/templates/${1}"
-	elif [ -e "${SSG__modules}/templates/${1}/template.rc" ]; then
-		local templateLocation="${SSG__modules}/templates/${1}"
+	if [ -e "${SSG__database}/${templates__dbdir}${1}/template.rc" ]; then
+		local templateLocation="${SSG__database}/${templates__dbdir}${1}"
+	elif [ -e "${SSG__modules}/${templates__dbdir}${1}/template.rc" ]; then
+		local templateLocation="${SSG__modules}/${templates__dbdir}${1}"
 	else
-		echo " - Template ${1} not exists" >&2
+		echo " - Template ${1} does not exist" >&2
 		return 1
 	fi
 
 	. "${templateLocation}/template.rc"
+}
+templates__current_get_part()
+{
+	# shortcut to templates__get_part
+
+	templates__get_part "${templates__template}" ${@}
+	return "$?"
 }

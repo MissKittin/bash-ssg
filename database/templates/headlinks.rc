@@ -1,6 +1,11 @@
 # import variables from certain modules
-moduleConfig='pages posts posts-tags'
-for moduleConfig in ${moduleConfig}; do [ -e "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" ] && . "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" || . "${SSG__modules}/${moduleConfig}/defaults.rc.d/${moduleConfig}.rc"; done; unset moduleConfig
+moduleConfig='pages posts posts-arch posts-tags'
+for moduleConfig in ${moduleConfig}; do
+	[ -e "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" ] && \
+		. "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" || \
+		. "${SSG__modules}/${moduleConfig}/defaults.rc.d/${moduleConfig}.rc"
+done
+unset 'moduleConfig'
 
 # write menu links
 cat << EOF
@@ -9,9 +14,13 @@ cat << EOF
 EOF
 
 "${posts__no_first_page_mode}" && \
-	echo "	<a class=\"headlink\" href=\"${defaults__url_prefix}/${posts__generated_page_directory}\">Posts</a>" || \
-	echo "	<a class=\"headlink\" href=\"${defaults__url_prefix}/${posts__generated_page_directory}1\">Posts</a>"
+	echo "<a class=\"headlink\" href=\"${defaults__url_prefix}/${posts__generated_page_directory}\">Posts</a>" || \
+	echo "<a class=\"headlink\" href=\"${defaults__url_prefix}/${posts__generated_page_directory}1\">Posts</a>"
 
 cat << EOF
 	<a class="headlink" href="${defaults__url_prefix}/${posts_tags__generated_directory}">Tags</a>
+	<a class="headlink" href="${defaults__url_prefix}/${posts_arch__generated_directory}">Archive</a>
 EOF
+
+# add link to RSS feed if posts-rss module is active
+[ ! "${posts_rss__url}" = '' ] && echo "<a class=\"headlink\" href=\"${posts_rss__link}\">Feed</a>"

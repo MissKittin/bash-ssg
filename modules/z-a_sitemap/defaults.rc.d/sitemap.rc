@@ -6,3 +6,5 @@ sitemap__param_changefreq='monthly'          # for all entries
 sitemap__save_info_to_robots_txt='true'      # Sitemap: sitemap-url
 sitemap__gzip_sitemap_xml='9'                # 1-9 or empty - disabled
 sitemap__remove_gz_extension='false'         # .gz or not .gz
+sitemap__header_content=''                   # add at the beginning of the file eg. "<?php header('Content-Type: application/rss+xml'); ?>"
+sitemap__footer_content=''                   # add at the end of the file eg. '<?php my_function(); ?>'

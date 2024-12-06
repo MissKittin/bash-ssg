@@ -1,0 +1,9 @@
+/* posts-tags module patch  - high resolution */
+#taglist {
+	margin-bottom: 2px;
+}
+#taglist a:link,
+#taglist a:hover,
+#taglist a:visited {
+	font-size: 16px;
+}

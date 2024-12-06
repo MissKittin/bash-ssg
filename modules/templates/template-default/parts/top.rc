@@ -1,20 +1,21 @@
-# default variables
-[ "${template__html_title}" = '' ] && template__html_title="${template__default_template__html_title}"
-
 # html header
+template__html_lang_tag=''
+template__html_title_tag=''
+[ ! "${template__html_lang}" = '' ] && template__html_lang_tag=' lang="'"${template__html_lang}"'"'
+[ ! "${template__html_title}" = '' ] && template__html_title_tag='<title>'"${template__html_title}"'</title>'
 cat << EOF
 <!DOCTYPE html>
-<html lang="${defaults__html_lang}">
+<html${template__html_lang_tag}>
 	<head>
-		<title>${template__html_title}</title>
+		${template__html_title_tag}
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/assets/${templateName}.css">
-		<script src="${defaults__url_prefix}/assets/${templateName}.js"></script>
+		<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/${template__generated_assets_directory}${templateName}.css">
+		<script src="${defaults__url_prefix}/${template__generated_assets_directory}${templateName}.js"></script>
 EOF
 
 # user defined headers
-[ -e "${SSG__database}/templates/html-headers.rc" ] && . "${SSG__database}/templates/html-headers.rc"
+[ -e "${SSG__database}/${templates__dbdir}html-headers.rc" ] && . "${SSG__database}/${templates__dbdir}html-headers.rc"
 
 # additional heraders
 [ ! "${template__html_headers}" = '' ] && echo "${template__html_headers}"
@@ -26,19 +27,19 @@ cat << EOF
 EOF
 
 # content header
-if [ -e "${SSG__database}/templates/header.rc" ]; then
+if [ -e "${SSG__database}/${templates__dbdir}header.rc" ]; then
 	echo '<div id="header">'
-		. "${SSG__database}/templates/header.rc"
+		. "${SSG__database}/${templates__dbdir}header.rc"
 	echo '</div>'
 fi
 
 # menu + page-content div
-echo '<div style="overflow: auto;">'
+echo '<div id="page-main-box">'
 
 # headlinks
-if [ -e "${SSG__database}/templates/headlinks.rc" ]; then
+if [ -e "${SSG__database}/${templates__dbdir}headlinks.rc" ]; then
 	echo '<div id="headlinks">'
-	. "${SSG__database}/templates/headlinks.rc"
+	. "${SSG__database}/${templates__dbdir}headlinks.rc"
 	echo '</div>'
 fi
 
@@ -46,5 +47,7 @@ fi
 echo '<div id="page-content">'
 
 # cleanup
-unset template__html_title
-unset template__html_headers
+unset 'template__html_lang_tag'
+unset 'template__html_title_tag'
+unset 'template__html_title'
+unset 'template__html_headers'

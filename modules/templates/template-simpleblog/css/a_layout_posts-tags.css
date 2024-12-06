@@ -1,0 +1,9 @@
+/* posts-tags module patch */
+#taglist {
+	text-align: center;
+}
+#taglist a:link,
+#taglist a:hover,
+#taglist a:visited {
+	text-decoration: none;
+}

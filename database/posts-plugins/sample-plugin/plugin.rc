@@ -18,8 +18,6 @@ cat << EOF
 	</div>
 EOF
 
-# remove post_id variable
-unset post_id
-
-# remove post url variable
-unset post_url
+# clean
+unset 'post_id'
+unset 'post_url'
