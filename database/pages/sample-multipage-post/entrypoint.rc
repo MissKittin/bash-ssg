@@ -4,10 +4,7 @@
 pages__render_script 'index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
 
 # render index2.rc to default file in page-2 subdirectory (second page)
-pages__render_script 'index2.rc' "${defaults__default_file_name}${defaults__default_file_extension}" 'page-2'
-
-# render page-2/index.rc to default file in page-2 subdirectory (second page, another option)
-#pages__render_script 'page-2/index.rc' "${defaults__default_file_name}${defaults__default_file_extension}"
+pages__render_script 'index2.rc' "${defaults__default_file_name}${defaults__default_file_extension}" '2'
 
 # copy additional files or directories (pages__copy_file input-file-or-dir output-file-or-dir)
 #pages__copy_file 'assets/square.css' 'square.css' # copy one file to generated/page/sample-page directory

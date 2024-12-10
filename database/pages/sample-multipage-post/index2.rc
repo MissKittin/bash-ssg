@@ -1,0 +1,49 @@
+# set page name
+template__html_title="Sample multipage post - Page 2 of 2 - ${template__site_title}"
+
+# page SEO metadata
+template__html_headers="${template__html_headers}"'
+	<meta name="description" content="This is page 2 of the sample multipage post">
+'
+
+# you can add code at the beginning of the generated file
+#echo -n "<?php header('Cache-Control: public, max-age=31536000'); ?>"
+
+# add top template
+templates__current_get_part 'top'
+
+# write content
+cat << EOF
+	<div class="post">
+		<!-- you can remove these divs -->
+		<div class="post-tags">tags</div>
+		<div class="post-date">date</div>
+		<div class="post-title">Sample multipage post 2/2</div>
+
+		<span style="font-weight: bold;">Variables</span><br>
+		\${entrypoint}="${entrypoint}"<hr>
+		\${script}="${script}"<hr>
+		\${script_path}="${script_path}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path}="${defaults__url_prefix}/${pages__generated_directory}${script_path}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path%/*}="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path%/*}/\${defaults__default_file_name}\${defaults__default_file_extension}="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}/${defaults__default_file_name}${defaults__default_file_extension}"
+	</div>
+EOF
+
+# add page selector
+cat << EOF
+	<div id="pages">
+		<div class="page"><a href="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}">1</a></div>
+		<div class="page current-page"><a href="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}/2">2</a></div>
+	</div>
+EOF
+
+# add bottom template
+templates__current_get_part 'bottom'
+
+# you can add code at the end of the generated file
+#echo -n "<?php my_function(); ?>"
+
+# copy additional files or directories (pages__copy_file input-file-or-dir output-file-or-dir)
+#pages__copy_file 'assets/square.css' 'square.css' # copy one file to generated/page/sample-page/page-2 directory
+#pages__copy_file 'assets' 'assets' # copy the whole directory to generated/page/sample-page/page-2

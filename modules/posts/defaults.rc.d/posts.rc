@@ -19,6 +19,14 @@ posts__not_found_footer_content=''      # add at the beginning of the no posts f
 # ${template__site_title} is from templates module
 posts__post_html_title()
 {
+	# for multipage posts
+	if [ ! "${posts__post_html_alt_title}" = '' ]; then
+		template__html_title="${posts__post_html_alt_title} - ${template__site_title}"
+		unset 'posts__post_html_alt_title'
+
+		return
+	fi
+
 	[ ! "${posts__post_title}" = '' ] && template__html_title="${posts__post_title} - ${template__site_title}"
 }
 posts__list_html_title()

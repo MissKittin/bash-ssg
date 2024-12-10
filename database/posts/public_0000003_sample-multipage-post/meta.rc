@@ -1,0 +1,61 @@
+# use queue number as post id (class="post-id-0000001") (optional)
+posts__post_id="${post##*/}"; posts__post_id="${posts__post_id#*_}"; posts__post_id="${posts__post_id%%_*}"
+
+# set post metadata
+posts__post_title="Sample multipage post"
+posts__post_date='21.12.2020'
+
+# redirect link address to page
+template__no_title_link='true'
+posts__post_html_alt_title="${posts__post_title}" # for posts__post_html_title function in defaults.rc.d/posts.rc
+[ "${rendered_post}" = '' ] && \
+	posts__post_title='<a href="'"${defaults__url_prefix}/page/${rendered_post_dir##*/}"'">'"${posts__post_title}"'</a>' || \
+	posts__post_title='<a href="'"${defaults__url_prefix}/page/${rendered_post}"'">'"${posts__post_title}"'</a>'
+
+# hide div post-title
+#template__html_title="${posts__post_title} - ${template__site_title}"
+#posts__post_title=''
+
+# set RSS publication date and description for post-rss module
+if [ "${__module_name__}" = 'posts-rss' ]; then
+	posts_rss__post_title="$(echo "${posts__post_title}" | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')" # escape html chars
+	posts_rss__post_description='Sample multipage post'
+	posts_rss__post_pubdate='Mon, 21 Dec 2020 00:00:00 +0100'
+
+	# hint: you can add the content of the post to the feed
+	#posts_rss__post_description="$(. "${post}/content.rc" | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')"
+
+	# hint: if you use BusyBox you can automate the date conversion:
+	#posts_rss__post_pubdate="$(date -d ${posts__post_date} -D '%d.%m.%y' '+%a, %d %b %Y %T %z')"
+
+	# hint: you can add your xml code to the <item> tag
+	#posts_rss__post_xml='<author>admin@bash.ssg</author>'
+fi
+
+# additional HTML headers
+template__html_headers='<!-- this code will be displayed in this posts page header -->'
+
+# SEO HTML headers
+# hint: if you use BusyBox you can automate the date conversion:
+#  <meta property="article:published_time" content="'"$(date -d ${posts__post_date} -D '%d.%m.%y' '+%Y-%m-%dT%H:%M:%S%z')"'">
+if [ ! "${__module_name__}" = 'posts-rss' ]; then
+	template__html_headers="${template__html_headers}"'
+		<meta property="article:author" content="BashSsgAdmin">
+		<meta property="article:published_time" content="2020-12-21T00:00:00+01:00">
+		<meta name="description" content="Post directory name: '"${post##*/}"' where public notices script that post is published">
+	'
+
+	for post_tag in ${post}/tags/*; do
+		[ "${post_tag}" = "${post}/tags/*" ] && break
+
+		template__html_headers="${template__html_headers}"'<meta property="tag" content="'"${post_tag##*/}"'">'
+	done
+
+	unset 'post_tag'
+fi
+
+# copy additional files or directories (posts__copy_file input-file-or-dir output-file-or-dir)
+#if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
+	#posts__copy_file 'assets/post-font.css' 'style.css' # copy one file to generated/post/sample-hidden-post directory
+	#posts__copy_file 'assets' 'assets' # copy the whole directory to generated/post/sample-hidden-post
+#fi

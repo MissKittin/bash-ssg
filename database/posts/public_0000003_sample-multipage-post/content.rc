@@ -1,0 +1,22 @@
+# write post content
+cat << EOF
+	<div style="text-align: center;">
+		Write some introduction here and put the rest of the content in <span style="font-weight: bold;">database/pages/sample-multipage-post/index.rc</span> and <span style="font-weight: bold;">database/pages/sample-multipage-post/index2.rc</span><br>
+		If you click on the post title or link below, you will be taken to the post page.
+	</div>
+	<br>
+	<div style="text-align: right;">
+EOF
+
+# add "Read more" link
+[ "${rendered_post}" = '' ] && \
+	echo '<a href="'"${defaults__url_prefix}/page/${rendered_post_dir##*/}"'">Read more</a></div>' || \
+	echo '<a href="'"${defaults__url_prefix}/page/${rendered_post}"'">Read more</a></div>'
+
+# instead of pure html you can use something else, like this
+#pandoc --from markdown --to html5 --no-highlight "${post}/content.md"
+# or like this
+#pandoc --from markdown --to html5 --no-highlight << EOF
+## Header
+#Content
+#EOF
