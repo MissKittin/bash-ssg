@@ -12,6 +12,12 @@ template__html_headers="${template__html_headers}"'
 	<meta name="description" content="This is sample page description and CSS square test">
 '
 
+# add metadata for sitemap module
+#echo '' > "${rendered_script_path}/exclude-from-sitemap"
+echo '2020-12-21' > "${rendered_script_path}/sitemap-lastmod"
+echo 'yearly' > "${rendered_script_path}/sitemap-changefreq"
+echo '0.8' > "${rendered_script_path}/sitemap-priority"
+
 # you can add code at the beginning of the generated file
 #echo -n "<?php header('Cache-Control: public, max-age=31536000'); ?>"
 

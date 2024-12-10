@@ -1,0 +1,21 @@
+body {
+	font-family: Arial;
+	font-size: 12pt;
+	color: #ffffff;
+	background-color: #2d2e2f;
+}
+table tr:nth-child(even) {
+	background-color: #1e1f20;
+}
+table td {
+	white-space: nowrap;
+}
+table td + td {
+	text-align: center;
+}
+a,
+a:hover,
+a:visited {
+	color: #00aaff;
+	text-decoration: none;
+}

@@ -1,10 +1,11 @@
 # sitemap module configuration
 sitemap__enabled='false'                     # enable or disable sitemap generation
-sitemap__page_domain='http://localhost:8080' # prefix
+sitemap__page_domain=''                      # prefix eg 'http://localhost:8080'
 sitemap__sitemap_file_name='sitemap.xml'     # sitemap file name
+sitemap__stylesheet_file_name='false'        # path to xsl file, eg "${sitemap__page_domain}/assets/sitemap.xsl" ; disabled if false
 sitemap__param_changefreq='monthly'          # for all entries
 sitemap__save_info_to_robots_txt='true'      # Sitemap: sitemap-url
-sitemap__gzip_sitemap_xml='9'                # 1-9 or empty - disabled
+sitemap__gzip_sitemap_xml=''                # 1-9 or empty - disabled
 sitemap__remove_gz_extension='false'         # .gz or not .gz
 sitemap__header_content=''                   # add at the beginning of the file eg. "<?php header('Content-Type: application/rss+xml'); ?>"
 sitemap__footer_content=''                   # add at the end of the file eg. '<?php my_function(); ?>'

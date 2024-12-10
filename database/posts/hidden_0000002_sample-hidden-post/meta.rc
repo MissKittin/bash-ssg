@@ -47,6 +47,14 @@ if [ ! "${__module_name__}" = 'posts-rss' ]; then
 	unset 'post_tag'
 fi
 
+# add metadata for sitemap module
+if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
+	echo '' > "${rendered_post_dir}/exclude-from-sitemap"
+	#echo '2020-12-21' > "${rendered_post_dir}/sitemap-lastmod"
+	#echo 'always' > "${rendered_post_dir}/sitemap-changefreq"
+	#echo '0.9' > "${rendered_post_dir}/sitemap-priority"
+fi
+
 # copy additional files or directories (posts__copy_file input-file-or-dir output-file-or-dir)
 #if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
 	#posts__copy_file 'assets/post-font.css' 'style.css' # copy one file to generated/post/sample-hidden-post directory

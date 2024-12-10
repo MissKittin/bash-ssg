@@ -1,0 +1,16 @@
+body {
+	font-family: Arial;
+	font-size: 12pt;
+	color: #ffffff;
+	background-color: #2d2e2f;
+}
+#channel-title {
+	text-align: center;
+}
+.post-title,
+.post-title:hover,
+.post-title:visited,
+.post-date {
+	color: #aaaaaa;
+	text-decoration: none;
+}

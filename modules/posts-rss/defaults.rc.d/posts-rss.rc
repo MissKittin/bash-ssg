@@ -3,6 +3,7 @@ posts_rss__url=''                                  # e.g. 'http://example.com' o
 posts_rss__force_enable='false'                    # ignore empty ${posts_rss__url}
 posts_rss__generated_directory='post/'             # must be empty or with slash at the end
 posts_rss__file='feed.xml'
+posts_rss__stylesheet_file='false'                 # path to xsl file, eg "${posts_rss__url}/assets/feed.xsl" ; disabled if false
 posts_rss__header_content=''                       # add at the beginning of the file eg. "<?php header('Content-Type: application/rss+xml'); ?>"
 posts_rss__footer_content=''                       # add at the end of the file eg. '<?php my_function(); ?>'
 posts_rss__title="${template__site_title} - Posts" # <title>

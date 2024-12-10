@@ -21,8 +21,41 @@ cd "${SSG__generated}"
 	if ! "${sitemap__enabled}"; then
 		echo 'Sitemap generation is disabled in settings'
 
-		find -type f -name 'exclude-from-sitemap' | while read 'file'; do
-			rm "${file}"
+		find -name "${defaults__default_file_name}${defaults__default_file_extension}" -type f | while read 'file'; do
+			file="${file#?}"
+			dir="${file%/*}"
+
+			if [ -e "${SSG__generated}${file%/*}/exclude-from-sitemap" ]; then
+				rm "${SSG__generated}${dir}/exclude-from-sitemap"
+				continue
+			fi
+
+			[ -e "${SSG__generated}${dir}/sitemap-lastmod" ] && \
+				rm "${SSG__generated}${dir}/sitemap-lastmod"
+
+			[ -e "${SSG__generated}${dir}/sitemap-changefreq" ] && \
+				rm "${SSG__generated}${dir}/sitemap-changefreq"
+
+			[ -e "${SSG__generated}${dir}/sitemap-priority" ] && \
+				rm "${SSG__generated}${dir}/sitemap-priority"
+		done
+
+		find -name "*${defaults__default_file_extension}" -type f -not -name "${defaults__default_file_name}${defaults__default_file_extension}" | while read 'file'; do
+			file="${file#?}"
+
+			if [ -e "${SSG__generated}${file}__exclude-from-sitemap" ]; then
+				rm "${SSG__generated}${file}__exclude-from-sitemap"
+				continue
+			fi
+
+			[ -e "${SSG__generated}${file}__sitemap-lastmod" ] && \
+				rm "${SSG__generated}${file}__sitemap-lastmod"
+
+			[ -e "${SSG__generated}${file}__sitemap-changefreq" ] && \
+				rm "${SSG__generated}${file}__sitemap-changefreq"
+
+			[ -e "${SSG__generated}${file}__sitemap-priority" ] && \
+				rm "${SSG__generated}${file}__sitemap-priority"
 		done
 
 		exit 0
@@ -38,33 +71,62 @@ echo 'Generating sitemap...'
 
 # save sitemap.xml header
 	echo "${sitemap__header_content}"'<?xml version="1.0" encoding="UTF-8" ?>' > "${SSG__generated}/${sitemap__sitemap_file_name}"
+	[ ! "${sitemap__stylesheet_file_name}" = 'false' ] && echo '<?xml-stylesheet type="text/xsl" href="'"${sitemap__stylesheet_file_name}"'" ?>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 	echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 
 # find ${defaults__default_file_name}${defaults__default_file_extension} files
 	find -name "${defaults__default_file_name}${defaults__default_file_extension}" -type f | while read 'file'; do
 		file="${file#?}"
+		dir="${file%/*}"
 
-		if [ -e "${SSG__generated}${file%/*}/exclude-from-sitemap" ]; then
-			echo " 'exclude-from-sitemap' exists in ${file%/*} - excluded"
-			rm "${SSG__generated}${file%/*}/exclude-from-sitemap"
+		if [ -e "${SSG__generated}${dir}/exclude-from-sitemap" ]; then
+			echo " exclude ${dir}"
+			rm "${SSG__generated}${dir}/exclude-from-sitemap"
 
 			continue
 		fi
 
 		echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo "<loc>${sitemap__page_domain}${file%/*}/</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<loc>${sitemap__page_domain}${dir}/</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+
+			if [ -e "${SSG__generated}${dir}/sitemap-lastmod" ]; then
+				file_lastmod="$(cat "${SSG__generated}${dir}/sitemap-lastmod")"
+				echo " 'lastmod' ${file_lastmod} ${dir}"
+
+				echo "<lastmod>$(cat "${SSG__generated}${dir}/sitemap-lastmod")</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${dir}/sitemap-lastmod"
+			else
+				echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
+
+			if [ -e "${SSG__generated}${dir}/sitemap-changefreq" ]; then
+				file_changefreq="$(cat "${SSG__generated}${dir}/sitemap-changefreq")"
+				echo " 'changefreq' ${file_changefreq} ${dir}"
+
+				echo "<changefreq>$(cat "${SSG__generated}${dir}/sitemap-changefreq")</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${dir}/sitemap-changefreq"
+			else
+				echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
+
+			if [ -e "${SSG__generated}${dir}/sitemap-priority" ]; then
+				file_priority="$(cat "${SSG__generated}${dir}/sitemap-priority")"
+				echo " 'priority' ${file_priority} ${dir}"
+
+				echo "<priority>$(cat "${SSG__generated}${dir}/sitemap-priority")</priority>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${dir}/sitemap-priority"
+			else
+				echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
 		echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 	done
 
 # find other .html files
-	find -name '*.html' -type f -not -name "${defaults__default_file_name}${defaults__default_file_extension}" | while read 'file'; do
+	find -name "*${defaults__default_file_extension}" -type f -not -name "${defaults__default_file_name}${defaults__default_file_extension}" | while read 'file'; do
 		file="${file#?}"
 
 		if [ -e "${SSG__generated}${file}__exclude-from-sitemap" ]; then
-			echo " '${SSG__generated}${file}__exclude-from-sitemap' exists - excluded"
+			echo " exclude ${file}"
 			rm "${SSG__generated}${file}__exclude-from-sitemap"
 
 			continue
@@ -72,9 +134,36 @@ echo 'Generating sitemap...'
 
 		echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 			echo "<loc>${sitemap__page_domain}${file}</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+
+			if [ -e "${SSG__generated}${file}__sitemap-lastmod" ]; then
+				file_lastmod="$(cat "${SSG__generated}${file}__sitemap-lastmod")"
+				echo " 'lastmod' ${file_lastmod} ${file}"
+
+				echo "<lastmod>$(cat "${SSG__generated}${file}__sitemap-lastmod")</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${file}__sitemap-lastmod"
+			else
+				echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
+
+			if [ -e "${SSG__generated}${file}__sitemap-changefreq" ]; then
+				file_changefreq="$(cat "${SSG__generated}${file}__sitemap-changefreq")"
+				echo " 'changefreq' ${file_changefreq} ${file}"
+
+				echo "<changefreq>$(cat "${SSG__generated}${file}__sitemap-changefreq")</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${file}__sitemap-changefreq"
+			else
+				echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
+
+			if [ -e "${SSG__generated}${file}__sitemap-priority" ]; then
+				file_priority="$(cat "${SSG__generated}${file}__sitemap-priority")"
+				echo " 'priority' ${file_priority} ${file}"
+
+				echo "<priority>$(cat "${SSG__generated}${file}__sitemap-priority")</priority>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+				rm "${SSG__generated}${file}__sitemap-priority"
+			else
+				echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			fi
 		echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 	done
 

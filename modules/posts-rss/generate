@@ -30,6 +30,8 @@ __module_name__='posts-rss'
 
 	echo "${posts_rss__header_content}"'<?xml version="1.0" encoding="UTF-8" ?>' > "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 
+	[ ! "${posts_rss__stylesheet_file}" = 'false' ] && echo '<?xml-stylesheet type="text/xsl" href="'"${posts_rss__stylesheet_file}"'" ?>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
 	echo '<rss version="2.0"><channel>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 		echo '<title>'"${posts_rss__title}"'</title>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 		echo '<link>'"${posts_rss__link}"'</link>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
