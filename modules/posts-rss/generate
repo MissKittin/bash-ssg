@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # RSS generator module
+[ ! "${@}" = '' ] && exit 1
 __module_name__='posts-rss'
 
 # defaults variables
@@ -24,36 +25,50 @@ __module_name__='posts-rss'
 	fi
 
 # header
-	[ ! -e "${SSG__generated}/${posts_rss__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_rss__generated_directory}"
+	[ ! -e "${SSG__generated}/${posts_rss__generated_directory}" ] && \
+		mkdir -p "${SSG__generated}/${posts_rss__generated_directory}"
+
 	echo "${posts_rss__header_content}"'<?xml version="1.0" encoding="UTF-8" ?>' > "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
 	echo '<rss version="2.0"><channel>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 		echo '<title>'"${posts_rss__title}"'</title>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 		echo '<link>'"${posts_rss__link}"'</link>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
-		[ ! "${posts_rss__lang}" = '' ] && echo '<language>'"${posts_rss__lang}"'</language>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
+		[ ! "${posts_rss__lang}" = '' ] && \
+			echo '<language>'"${posts_rss__lang}"'</language>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 
 # database processing (reverse order)
 	posts__post_pivot=''
+
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
 		posts__post_pivot="${post} ${posts__post_pivot}"
 	done
+
 	post="${posts__post_pivot}"
 	unset 'posts__post_pivot'
 
 	for post in ${post}; do
 		[ "${post}" = "${SSG__database}/${posts__dbdir}/public_*" ] && break
-		echo " Adding post ${post##*/}"
 
+		echo " Adding post ${post##*/}"
 		. "${post}/meta.rc"
+
 		echo '<item>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 			[ "${posts_rss__post_title}" = '' ] && \
 				echo '<title></title>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}" || \
 				echo '<title>'"${posts_rss__post_title}"'</title>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
 			echo '<link>'"${posts_rss__url}${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}"'</link>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
-			[ ! "${posts_rss__post_pubdate}" = '' ] && echo '<pubDate>'"${posts_rss__post_pubdate}"'</pubDate>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
+			[ ! "${posts_rss__post_pubdate}" = '' ] && \
+				echo '<pubDate>'"${posts_rss__post_pubdate}"'</pubDate>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
 			[ "${posts_rss__post_description}" = '' ] && \
 				echo '<description></description>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}" || \
 				echo '<description>'"${posts_rss__post_description}"'</description>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
-				[ ! "${posts_rss__post_xml}" = '' ] && echo "${posts_rss__post_xml}" >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
+
+			[ ! "${posts_rss__post_xml}" = '' ] && \
+				echo "${posts_rss__post_xml}" >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 		echo '</item>' >> "${SSG__generated}/${posts_rss__generated_directory}${posts_rss__file}"
 
 		unset 'posts_rss__post_title'

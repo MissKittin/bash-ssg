@@ -3,6 +3,7 @@ template__html_lang_tag=''
 template__html_title_tag=''
 [ ! "${template__html_lang}" = '' ] && template__html_lang_tag=' lang="'"${template__html_lang}"'"'
 [ ! "${template__html_title}" = '' ] && template__html_title_tag='<title>'"${template__html_title}"'</title>'
+
 cat << EOF
 <!DOCTYPE html>
 <html${template__html_lang_tag}>
@@ -10,11 +11,12 @@ cat << EOF
 		${template__html_title_tag}
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/${template__generated_assets_directory}${templateName}.css">
+		<link rel="stylesheet" href="${defaults__url_prefix}/${template__generated_assets_directory}${__template_name__}.css">
 EOF
 
 # user defined headers
-[ -e "${SSG__database}/${templates__dbdir}html-headers.rc" ] && . "${SSG__database}/${templates__dbdir}html-headers.rc"
+[ -e "${SSG__database}/${templates__dbdir}html-headers.rc" ] && \
+	. "${SSG__database}/${templates__dbdir}html-headers.rc"
 
 # additional heraders
 [ ! "${template__html_headers}" = '' ] && echo "${template__html_headers}"
@@ -38,7 +40,7 @@ echo '<div id="page-main-box">'
 # headlinks
 if [ -e "${SSG__database}/${templates__dbdir}headlinks.rc" ]; then
 	echo '<div id="headlinks">'
-	. "${SSG__database}/${templates__dbdir}headlinks.rc"
+		. "${SSG__database}/${templates__dbdir}headlinks.rc"
 	echo '</div>'
 fi
 

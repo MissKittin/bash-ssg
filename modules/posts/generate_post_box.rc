@@ -1,0 +1,29 @@
+generate_post_box()
+{
+	local template__no_title_link='true'
+	local posts__post_title
+	local posts__post_date
+	local posts__post_id
+	local posts__post_tags
+
+	[ ! "${1}" = 'no_title_link' ] && template__no_title_link='false'
+
+	. "${post}/meta.rc"
+
+	if [ -e "${post}/tags" ]; then
+		local tag
+		local posts__post_tags
+
+		for tag in ${post}/tags/*; do
+			[ "${tag}" = "${post}/tags/*" ] && break
+			posts__post_tags="${posts__post_tags} #${tag##*/}"
+		done
+
+		posts__post_tags="${posts__post_tags#?}"
+		unset 'tag'
+	fi
+
+	if ! templates__current_get_part 'resource' 'posts-content'; then
+		echo "error: template ${templates__template} does not provide posts-content.rc" >&2
+	fi
+}

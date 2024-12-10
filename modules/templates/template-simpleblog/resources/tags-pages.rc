@@ -3,24 +3,30 @@
 # ignore if is one page only
 if [ "${posts_tags__counted_pages}" -gt '1' ]; then
 	echo '<div id="pages">'
-		local pageNumber
-		for pageNumber in $(
-			pageNumberString='1'
-			while [ "${pageNumberString}" -le "${posts_tags__counted_pages}" ]; do
-				echo -n "${pageNumberString} "
-				pageNumberString="$((pageNumberString+1))"
+		local page_number
+
+		for page_number in $(
+			page_number_string='1'
+
+			while [ "${page_number_string}" -le "${posts_tags__counted_pages}" ]; do
+				echo -n "${page_number_string} "
+				page_number_string="$((page_number_string+1))"
 			done
-			unset 'pageNumberString'
+
+			unset 'page_number_string'
 		)
 		do
-			[ "${currentPageNumber}" = "${pageNumber}" ] && local pageNumberCurrent=' current-page'
-			if [ "${pageNumber}" = '1' ]; then
-				echo '<div class="page'"${pageNumberCurrent}"'"><a href="'"${defaults__url_prefix}/${posts_tags__generated_directory}/${tag}"'">'"${pageNumber}"'</a></div>'
+			[ "${current_page_number}" = "${page_number}" ] && local page_number_current=' current-page'
+
+			if [ "${page_number}" = '1' ]; then
+				echo '<div class="page'"${page_number_current}"'"><a href="'"${defaults__url_prefix}/${posts_tags__generated_directory}/${tag}"'">'"${page_number}"'</a></div>'
 			else
-				echo '<div class="page'"${pageNumberCurrent}"'"><a href="'"${defaults__url_prefix}/${posts_tags__generated_directory}/${tag}/${pageNumber}"'">'"${pageNumber}"'</a></div>'
+				echo '<div class="page'"${page_number_current}"'"><a href="'"${defaults__url_prefix}/${posts_tags__generated_directory}/${tag}/${page_number}"'">'"${page_number}"'</a></div>'
 			fi
-			unset 'pageNumberCurrent'
+
+			unset 'page_number_current'
 		done
-		unset 'pageNumber'
+
+		unset 'page_number'
 	echo '</div>'
 fi

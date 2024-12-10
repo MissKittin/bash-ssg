@@ -40,13 +40,15 @@ if [ ! "${__module_name__}" = 'posts-rss' ]; then
 
 	for post_tag in ${post}/tags/*; do
 		[ "${post_tag}" = "${post}/tags/*" ] && break
+
 		template__html_headers="${template__html_headers}"'<meta property="tag" content="'"${post_tag##*/}"'">'
 	done
+
 	unset 'post_tag'
 fi
 
 # copy additional files or directories (posts__copy_file input-file-or-dir output-file-or-dir)
-#if [ "${__module_name__}" = 'posts' ]; then
+#if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
 	#posts__copy_file 'assets/post-font.css' 'style.css' # copy one file to generated/post/sample-hidden-post directory
 	#posts__copy_file 'assets' 'assets' # copy the whole directory to generated/post/sample-hidden-post
 #fi

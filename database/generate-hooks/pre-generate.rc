@@ -3,6 +3,7 @@
 
 for hook in ${SSG__database}/generate-hooks/pre-generate.rc.d/*.rc; do
 	[ "${hook}" = "${SSG__database}/generate-hooks/pre-generate.rc.d/*.rc" ] && break
+
 	echo "  -> ${hook##*/}"
 	. "${hook}"
 done

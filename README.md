@@ -5,12 +5,12 @@ Reads files from the `database` directory and renders to the `generated` directo
 ### Running on Windows
 You need to find a BusyBox binary compiled for Windows.  
 You can find it e.g. [here](https://frippery.org/busybox/index.html).  
-Create a `bin` directory, put the `busybox.exe` in it.  
+Create a `bin` directory and put the `busybox.exe` in it.  
 Follow the instructions below, and then instead of the last step, execute in the command line:
 ```
 bin\busybox.exe sh generate
 ```
-By the way, you can check the results of your work by issuing a command
+By the way, you can check the results of your work by issuing a command:
 ```
 bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 ```
@@ -20,7 +20,7 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 2. create first page:
 	* in `pages/sample-page/index.rc` is the page definition
 	* in `pages/sample-page/entrypoint.rc` are names of the scripts that will be rendered
-	* `pages/sample-page/square.css` is a sample file for testing the `pages__copy_file` function called from `index.rc`
+	* `pages/sample-page/assets/square.css` is a sample file for testing the `pages__copy_file` function called from `index.rc`
 	* `pages/home` is an example home page
 3. create first post:
 	* example post directory name is `public_0000001_sample-post`, where  
@@ -29,23 +29,24 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 		and `sample-post` is the link to the post (here: `/post/sample-post`)
 	* in `posts/public_0000001_sample-post/content.rc` is the content of the post
 	* in `posts/public_0000001_sample-post/meta.rc` are the post metadata
+	* `posts/public_0000001_sample-post/assets/post-font.css` is a sample file for testing the `posts__copy_file` function called from `meta.rc`
 	* there are empty files in `posts/public_0000001_sample-post/tags` for `posts`, `posts-arch` and `posts-tags` modules, only file name is processed
 	* empty file `posts/public_0000001_sample-post/arch_2020-12-21` has date for `posts-arch` module in `arch_YYYY-MM-DD` format, only file name is processed
-	* if you want to hide the post change the `public_` prefix to `hidden_` - the post will still be available but will not appear on the list of posts and tags
+	* if you want to hide the post change the `public_` prefix to `hidden_` - the post will still be available but will not appear on the list of posts, archives and tags
 	* and if you want to unpublish the post, change the `public_` prefix to anything you like, e.g. `draft_`
 4. create first post plugin:
 	* everything is described in `posts-plugins/sample-plugin/plugin.rc`
 	* remove `posts-plugins/sample-plugin/plugin-disabled` to enable this plugin
 	* plugins are displayed below each post on the specific post page
-5. put static files in the `static` directory  
-	and replace `database/static/assets/favicon.ico`  
+5. put static files in the `static` directory and replace `database/static/assets/favicon.ico`  
 	**warning:** be careful with dotfiles - if you remove them from `database/static`, they may still remain in the `generated` directory  
 	this is the intended action to be able to add VCS to this directory
 6. edit files in the `templates` directory
 7. edit the settings in `defaults.rc.d`
 8. if you want to run something before generating, enter the commands into the `database/generate-hooks/pre-generate.rc`  
 	before exiting it looks for the `database/generate-hooks/post-generate.rc` file
-9. run `./generate`
+9. run `./generate`  
+	if you want to log the output, run `./generate > bash-ssg-generate.log 2>&1`
 
 ### Settings
 The main `generate` script defines global variables for all modules - if you need, copy this block, paste to the `database/defaults.rc.d/defaults.rc` and edit. You can change shebang in this file.  

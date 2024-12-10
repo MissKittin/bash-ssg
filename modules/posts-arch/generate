@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # Post archive generator module
+[ ! "${@}" = '' ] && exit 1
 __module_name__='posts-arch'
 
 # defaults variables
@@ -13,37 +14,7 @@ __module_name__='posts-arch'
 	[ "${posts_arch__generated_directory}" = '' ] && posts_arch__generated_directory='arch'
 
 # functions
-	generatePostBox()
-	{
-		if [ ! "${1}" = 'noTitleLink' ]; then  # for post metadata
-			. "${post}/meta.rc"
-			template__no_title_link='false'
-		else
-			template__no_title_link='true'
-		fi
-
-		if [ -e "${post}/tags" ]; then
-			local tag
-			local posts__post_tags
-			for tag in ${post}/tags/*; do
-				[ "${tag}" = "${post}/tags/*" ] && break
-				posts__post_tags="${posts__post_tags} #${tag##*/}"
-			done
-			posts__post_tags="${posts__post_tags#?}"
-			unset 'tag'
-		fi
-
-		if ! templates__current_get_part 'resource' 'posts-content'; then
-			echo "error: template ${templates__template} does not provide posts-content.rc" >&2
-		fi
-
-		unset 'posts__post_title'
-		unset 'posts__post_date'
-		unset 'posts__post_id'
-		unset 'posts__post_tags'
-
-		unset 'template__no_title_link'
-	}
+	. "${0%/*}/../posts/generate_post_box.rc"
 
 # directory in database
 	if [ ! -e "${SSG__database}/${posts__dbdir}" ]; then
@@ -53,21 +24,28 @@ __module_name__='posts-arch'
 
 # database processing
 	post_arch__date_list=''
+
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
 		[ "${post}" = "${SSG__database}/${posts__dbdir}/public_*" ] && break
+
 		for post_arch in ${post}/arch_*; do
 			[ "${post_arch}" = "${post}/arch_*" ] && break
+
 			post_arch=${post_arch##*/}
 			post_arch__date_list="${post_arch#*_} ${post_arch__date_list}"
 		done
 	done
-	[ ! "${post_arch__date_list}" = '' ] && post_arch__date_list="$(echo -n "${post_arch__date_list}" | tr ' ' '\n' | uniq)" # deduplicate date list
+
+	# deduplicate date list
+	[ ! "${post_arch__date_list}" = '' ] && \
+		post_arch__date_list="$(echo -n "${post_arch__date_list}" | tr ' ' '\n' | uniq)"
 
 # date list processing
 	posts_arch__generate_date_list()
 	{
 		local template__html_headers="${posts_arch__list_html_headers}"
 		posts_arch__html_title
+
 		echo -n "${posts_arch__list_header_content}"
 		templates__current_get_part 'top'
 
@@ -78,7 +56,9 @@ __module_name__='posts-arch'
 		templates__current_get_part 'bottom'
 		echo -n "${posts_arch__list_footer_content}"
 	}
+
 	[ ! -e "${SSG__generated}/${posts_arch__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_arch__generated_directory}"
+
 	if "${posts_arch__enable_date_lists}"; then
 		if "${posts_arch__parallel_rendering}"; then
 			posts_arch__generate_date_list >> "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
@@ -93,64 +73,74 @@ __module_name__='posts-arch'
 	if [ ! "${post_arch__date_list}" = '' ]; then
 		posts_arch__generate_list()
 		{
-			local currentPostNumber='1'
-			local currentPageNumber='1'
-			local renderedPageDirNumber=''
 			local post
+			local rendered_post
+			local current_post_number='1'
+			local current_page_number='1'
+			local rendered_page_dir_number=''
 
 			for post in ${1}; do
 				post="${post%/*}"
-				if [ ! "${currentPageNumber}" = '1' ] && [ "${currentPostNumber}" = '1' ]; then
-					renderedPageDirNumber="/${currentPageNumber}"
-					mkdir "${renderedPageDir}${renderedPageDirNumber}"
+
+				if [ ! "${current_page_number}" = '1' ] && [ "${current_post_number}" = '1' ]; then
+					rendered_page_dir_number="/${current_page_number}"
+					mkdir "${rendered_page_dir}${rendered_page_dir_number}"
 				fi
 
-				if [ "${currentPostNumber}" = '1' ]; then
-					echo " Processing page ${currentPageNumber}"
+				if [ "${current_post_number}" = '1' ]; then
+					echo " Processing page ${current_page_number}"
+
 					template__html_headers="${posts_arch__listing_html_headers}"
 					posts_arch__list_html_title
-					echo -n "${posts_arch__listing_header_content}" >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
-					templates__current_get_part 'top' >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+					echo -n "${posts_arch__listing_header_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+					templates__current_get_part 'top' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 				fi
 
-				echo "  Adding post ${post##*/}"
-				local renderedPost="${post##*_}"
-				generatePostBox >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
+				rendered_post="${post##*_}"
+				echo "  Adding post ${rendered_post}"
+				generate_post_box >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 
-				if [ "${currentPostNumber}" = "${posts__posts_per_page}" ]; then
-					if ! templates__current_get_part 'resource' 'arch-pages' >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+				if [ "${current_post_number}" = "${posts__posts_per_page}" ]; then
+					if ! templates__current_get_part 'resource' 'arch-pages' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"; then
 						echo "error: template ${templates__template} does not provide arch-pages.rc"
 					fi
 
-					templates__current_get_part 'bottom' >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
-					echo -n "${posts_arch__listing_footer_content}" >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
+					templates__current_get_part 'bottom' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+					echo -n "${posts_arch__listing_footer_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 
-					currentPostNumber='1'
-					currentPageNumber="$((currentPageNumber+1))"
-				else
-					currentPostNumber="$((currentPostNumber+1))"
+					current_post_number='1'
+					current_page_number="$((current_page_number+1))"
+
+					continue
 				fi
+
+				current_post_number="$((current_post_number+1))"
 			done
-			if [ ! "${currentPostNumber}" = "${posts__posts_per_page}" ] && [ ! "${currentPostNumber}" = '1' ]; then
-				if ! templates__current_get_part 'resource' 'arch-pages' >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+
+			if [ ! "${current_post_number}" = "${posts__posts_per_page}" ] && [ ! "${current_post_number}" = '1' ]; then
+				if ! templates__current_get_part 'resource' 'arch-pages' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"; then
 					echo "error: template ${templates__template} does not provide arch-pages.rc"
 				fi
 
-				templates__current_get_part 'bottom' >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
-				echo -n "${posts_arch__listing_footer_content}" >> "${renderedPageDir}${renderedPageDirNumber}/${defaults__default_file_name}${defaults__default_file_extension}"
+				templates__current_get_part 'bottom' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+				echo -n "${posts_arch__listing_footer_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 			fi
 		}
 
 		for date in ${post_arch__date_list}; do
 			echo "Processing date ${date}"
-			renderedPageDir="${SSG__generated}/${posts_arch__generated_directory}/${date}"
-			mkdir "${renderedPageDir}"
+
+			rendered_page_dir="${SSG__generated}/${posts_arch__generated_directory}/${date}"
+			mkdir "${rendered_page_dir}"
 
 			posts_arch__counted_posts='0'
 			posts_arch__counted_posts_find="$(find ${SSG__database}/${posts__dbdir}/public_* -type f -path "*/arch_${date}" | tac)" # cache
+
 			for post in ${posts_arch__counted_posts_find}; do
 				posts_arch__counted_posts="$((posts_arch__counted_posts+1))"
 			done
+
 			posts_arch__counted_pages="$(awk '
 				BEGIN {
 					printf \
@@ -161,10 +151,12 @@ __module_name__='posts-arch'
 
 			if "${posts_arch__parallel_rendering}"; then
 				posts_arch__generate_list "${posts_arch__counted_posts_find}" &
-			else
-				posts_arch__generate_list "${posts_arch__counted_posts_find}"
+				continue
 			fi
+
+			posts_arch__generate_list "${posts_arch__counted_posts_find}"
 		done
+
 		"${posts_arch__parallel_rendering}" && wait
 	fi
 
@@ -173,7 +165,8 @@ __module_name__='posts-arch'
 		echo 'This is default module - generating home page'
 		mv "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 	else
-		'Error: posts_arch__enable_date_lists is false - this module cannot be the default module'
+		echo 'Error: posts_arch__enable_date_lists is false - this module cannot be the default module'
+		exit 1
 	fi
 
 exit 0

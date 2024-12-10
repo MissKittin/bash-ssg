@@ -23,18 +23,18 @@ cat << EOF
 		<span style="font-weight: bold;">Variables</span><br>
 		\${entrypoint}="${entrypoint}"<hr>
 		\${script}="${script}"<hr>
-		\${scriptPath}="${scriptPath}"<hr>
-		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath}"<hr>
-		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}"<hr>
-		\${defaults__url_prefix}/\${pages__generated_directory}\${scriptPath%/*}/\${defaults__default_file_name}\${defaults__default_file_extension}="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}/${defaults__default_file_name}${defaults__default_file_extension}"
+		\${script_path}="${script_path}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path}="${defaults__url_prefix}/${pages__generated_directory}${script_path}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path%/*}="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}"<hr>
+		\${defaults__url_prefix}/\${pages__generated_directory}\${script_path%/*}/\${defaults__default_file_name}\${defaults__default_file_extension}="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}/${defaults__default_file_name}${defaults__default_file_extension}"
 	</div>
 EOF
 
 # add page selector
 cat << EOF
 	<div id="pages">
-		<div class="page"><a href="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}">1</a></div>
-		<div class="page current-page"><a href="${defaults__url_prefix}/${pages__generated_directory}${scriptPath%/*}/page-2">2</a></div>
+		<div class="page"><a href="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}">1</a></div>
+		<div class="page current-page"><a href="${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}/page-2">2</a></div>
 	</div>
 EOF
 

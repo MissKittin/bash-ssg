@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # Pages generator module
+[ ! "${@}" = '' ] && exit 1
 __module_name__='pages'
 
 # defaults variables
@@ -11,84 +12,101 @@ __module_name__='pages'
 	. "${SSG__lib}/import-defaults.rc"
 
 # directory in database
-	if [ ! -e "${SSG__database}/${pages__dbdir}" ]; then
-		echo '"'"${pages__dbdir}"'" directory not found in database'
+	[ ! -e "${SSG__database}/${pages__dbdir}" ] && \
+		echo '"'"${pages__dbdir}"'" directory not found in database' && \
 		exit 1
-	fi
 
 # functions
 	pages__render_script()
 	{
 		local script="${entrypoint%/*}/${1}"
-		local scriptPath="$(echo -n "${script}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
-		local renderedScriptPathSubpath="${3}"; [ ! "${renderedScriptPathSubpath}" = '' ] && renderedScriptPathSubpath="/${renderedScriptPathSubpath}"
-		local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}${renderedScriptPathSubpath}"
+		local script_path="$(echo -n "${script}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
 
-		[ -e "${renderedScriptPath}" ] && echo "error: directory conflict on ${pages__generated_directory}${scriptPath%/*}"
+		local rendered_script_path_subpath="${3}"
+		[ ! "${rendered_script_path_subpath}" = '' ] && \
+			rendered_script_path_subpath="/${rendered_script_path_subpath}"
 
-		echo " Generating script ${scriptPath}"
-		[ ! -e "${renderedScriptPath}" ] && mkdir -p "${renderedScriptPath}"
-		. "${script}" >> "${renderedScriptPath}/${2}"
+		local rendered_script_path="${SSG__generated}/${pages__generated_directory}${script_path%/*}${rendered_script_path_subpath}"
+
+		[ -e "${rendered_script_path}" ] && \
+			echo "error: directory conflict on ${pages__generated_directory}${script_path%/*}"
+
+		echo " Generating script ${script_path}"
+
+		[ ! -e "${rendered_script_path}" ] && \
+			mkdir -p "${rendered_script_path}"
+
+		. "${script}" >> "${rendered_script_path}/${2}"
 	}
 	pages__copy_file()
 	{
-		local scriptLocation="${entrypoint%/*}"
+		local script_location="${entrypoint%/*}"
 
-		if [ "${renderedScriptPath}" = '' ]; then
-			local scriptPath="$(echo -n "${entrypoint%/*}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
-			local renderedScriptPath="${SSG__generated}/${pages__generated_directory}${scriptPath%/*}"
+		if [ "${rendered_script_path}" = '' ]; then
+			local script_path="$(echo -n "${entrypoint%/*}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
+			local rendered_script_path="${SSG__generated}/${pages__generated_directory}${script_path%/*}"
 		fi
 
-		if [ -e "${scriptLocation}/${1}" ]; then
-			if [ -f "${scriptLocation}/${1}" ]; then
-				echo " Copying file '${1}' to '${2}'" >&2
-			elif [ -d "${scriptLocation}/${1}" ]; then
-				echo " Copying directory '${1}' to '${2}'" >&2
-			else
-				echo " Copying '${1}' to '${2}'" >&2
-			fi
+		if [ ! -e "${script_location}/${1}" ]; then
+			echo "   File ${script_location}/${1} not exists" >&2
+			return
+		fi
 
-			[ ! -e "${renderedScriptPath}" ] && mkdir "${renderedScriptPath}"
-			cp -r "${scriptLocation}/${1}" "${renderedScriptPath}/${2}"
+		if [ -f "${script_location}/${1}" ]; then
+			echo "  Copying file '${1}' to '${2}'" >&2
+		elif [ -d "${script_location}/${1}" ]; then
+			echo "  Copying directory '${1}' to '${2}'" >&2
 		else
-			echo "  File ${scriptLocation}/${1} not exists" >&2
+			echo "  Copying '${1}' to '${2}'" >&2
 		fi
+
+		[ ! -e "${rendered_script_path}" ] && \
+			mkdir "${rendered_script_path}"
+
+		cp -r "${script_location}/${1}" "${rendered_script_path}/${2}"
 	}
 
 # database processing
 	for page in ${SSG__database}/${pages__dbdir}/*; do
 		[ "${page}" = "${SSG__database}/${pages__dbdir}/*" ] && break
+		[ ! -d "${page}" ] && continue
 
-		if [ -d "${page}" ]; then
-			echo "Generating page '${page##*/}'"
-			if "${pages__parallel_rendering}"; then
-				find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
-					unset 'page'
-					. "${entrypoint}"
-				done &
-			else
-				find "${page}" -name 'entrypoint.rc' | while read entrypoint; do
-					unset 'page'
-					. "${entrypoint}"
-				done
-			fi
+		echo "Generating page '${page##*/}'"
+
+		if "${pages__parallel_rendering}"; then
+			find "${page}" -name 'entrypoint.rc' | while read 'entrypoint'; do
+				unset 'page'
+				. "${entrypoint}"
+			done &
+
+			continue
 		fi
+
+		find "${page}" -name 'entrypoint.rc' | while read 'entrypoint'; do
+			unset 'page'
+			. "${entrypoint}"
+		done
 	done
+
 	"${pages__parallel_rendering}" && wait
 
 # home page processing
 	. "${SSG__lib}/import-includes.rc"
+
 	[ "${defaults__home_module}" = "${__module_name__}" ] && if [ "${pages__default_page}" = '' ]; then
 		echo 'pages__default_page is empty - home page not copied'
-	else
-		echo "This is default module - moving '${pages__default_page}' page"
-
-		if [ -e "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
-			mv "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
-			rmdir "${SSG__generated}/${pages__generated_directory}${pages__default_page}" # will be failed if other files were copied
-		else
-			echo "${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension} not found in generated files"
-		fi
+		exit 0
 	fi
+
+	echo "This is default module - moving '${pages__default_page}' page"
+
+	if [ -e "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
+		mv "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+		rmdir "${SSG__generated}/${pages__generated_directory}${pages__default_page}" # will be failed if other files were copied
+
+		exit 0
+	fi
+
+	echo "${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension} not found in generated files"
 
 exit 0

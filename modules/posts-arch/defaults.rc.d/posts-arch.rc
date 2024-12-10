@@ -24,17 +24,17 @@ posts_arch__html_title()
 }
 posts_arch__list_html_title()
 {
-	#if [ "${currentPageNumber}" = '1' ]; then
+	#if [ "${current_page_number}" = '1' ]; then
 	#	template__html_title="Archive ${date} - ${template__site_title}"
 	#else
-	#	template__html_title="Archive ${date} - Page ${currentPageNumber} - ${template__site_title}"
+	#	template__html_title="Archive ${date} - Page ${current_page_number} - ${template__site_title}"
 	#fi
 
 	local date_formatted=$(posts_arch__format_date_label)
 
-	if [ "${currentPageNumber}" = '1' ]; then
+	if [ "${current_page_number}" = '1' ]; then
 		template__html_title="Archive ${date_formatted} - ${template__site_title}"
 	else
-		template__html_title="Archive ${date_formatted} - Page ${currentPageNumber} - ${template__site_title}"
+		template__html_title="Archive ${date_formatted} - Page ${current_page_number} - ${template__site_title}"
 	fi
 }

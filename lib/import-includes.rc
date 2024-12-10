@@ -1,4 +1,5 @@
 # import shared resources from modules
+
 for includeModule in ${SSG__modules}/*/include.rc; do
 	[ "${includeModule}" = "${SSG__modules}/*/include.rc" ] && break
 	. "${includeModule}"
@@ -9,5 +10,6 @@ for includeModule in ${SSG__modules}/*/include.rc; do
 		. "${includeModule}"
 	done
 done
+
 unset 'includeModule'
 unset 'includeModuleDefaults'

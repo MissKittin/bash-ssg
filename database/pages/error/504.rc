@@ -1,4 +1,4 @@
-echo '' > "${renderedScriptPath}/exclude-from-sitemap"
+echo '' > "${rendered_script_path}/exclude-from-sitemap"
 
 template__html_title="Gateway timeout - ${template__site_title}"
 templates__current_get_part 'top'

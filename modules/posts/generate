@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # Post generator module
+[ ! "${@}" = '' ] && exit 1
 __module_name__='posts'
 
 # defaults variables
@@ -7,67 +8,46 @@ __module_name__='posts'
 	. "${0%/*}/defaults.rc.d/posts.rc"
 
 # variables
-	posts__ind='1'; posts__ind_pages='1'; posts__page='1' # indicators
+	posts__ind='1'
+	posts__ind_pages='1'
+	posts__page='1'
+
 	. "${SSG__lib}/import-includes.rc"
 	. "${SSG__lib}/import-defaults.rc"
 
 # directory in database
-	if [ ! -e "${SSG__database}/${posts__dbdir}" ]; then
-		echo '"'"${posts__dbdir}"'" directory not found in database'
+	[ ! -e "${SSG__database}/${posts__dbdir}" ] && \
+		echo '"'"${posts__dbdir}"'" directory not found in database' && \
 		exit 1
-	fi
 
 # functions
+	. "${0%/*}/generate_post_box.rc"
 	posts__copy_file()
 	{
-		[ ! -e "${renderedPostDir}/${2}" ] && if [ -e "${post}/${1}" ]; then
-			if [ -f "${post}/${1}" ]; then
-				echo " Copying file '${1}' to '${2}'" >&2
-			elif [ -d "${post}/${1}" ]; then
-				echo " Copying directory '${1}' to '${2}'" >&2
-			else
-				echo " Copying '${1}' to '${2}'" >&2
-			fi
-
-			cp -r "${post}/${1}" "${renderedPostDir}/${2}"
-		else
+		if [ ! -e "${post}/${1}" ]; then
 			echo "  File ${post}/${1} not exists" >&2
+			return
 		fi
-	}
-	generatePostBox()
-	{
-		if [ ! "${1}" = 'noTitleLink' ]; then  # for post metadata
-			. "${post}/meta.rc"
-			template__no_title_link='false'
+
+		if [ -e "${rendered_post_dir}/${2}" ]; then
+			echo "  File ${2} already exists in ${rendered_post_dir}" >&2
+			return
+		fi
+
+		if [ -f "${post}/${1}" ]; then
+			echo " Copying file '${1}' to '${2}'" >&2
+		elif [ -d "${post}/${1}" ]; then
+			echo " Copying directory '${1}' to '${2}'" >&2
 		else
-			template__no_title_link='true'
+			echo " Copying '${1}' to '${2}'" >&2
 		fi
 
-		if [ -e "${post}/tags" ]; then
-			local tag
-			local posts__post_tags
-			for tag in ${post}/tags/*; do
-				[ "${tag}" = "${post}/tags/*" ] && break
-				posts__post_tags="${posts__post_tags} #${tag##*/}"
-			done
-			posts__post_tags="${posts__post_tags#?}"
-			unset 'tag'
-		fi
-
-		if ! templates__current_get_part 'resource' 'posts-content'; then
-			echo "error: template ${templates__template} does not provide posts-content.rc" >&2
-		fi
-
-		unset 'posts__post_title'
-		unset 'posts__post_date'
-		unset 'posts__post_id'
-		unset 'posts__post_tags'
-
-		unset 'template__no_title_link'
+		cp -r "${post}/${1}" "${rendered_post_dir}/${2}"
 	}
 
 # database preprocessing - count pages
 	posts__counted_posts='1'
+
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
 		[ "${post}" = "${SSG__database}/${posts__dbdir}/public_*" ] && break
 		posts__counted_posts="$((posts__counted_posts+1))"
@@ -85,23 +65,29 @@ __module_name__='posts'
 	unset 'posts__counted_posts'
 
 # database processing
-	generateForPost()
+	generate_for_post()
 	{
-		postName="${post##*/}"
-		echo "Generating ${1} post ${postName##*_}"
-		unset 'postName'
+		local post_name="${post##*/}"
+		echo "Generating ${1} post ${post_name##*_}"
+		unset 'post_name'
 
-		renderedPostDir="${post##*/}"; renderedPostDir="${renderedPostDir##*_}"; renderedPostDir="${SSG__generated}/${posts__generated_post_directory}${renderedPostDir}" # cache
-		[ ! -e "${renderedPostDir}" ] && mkdir -p "${renderedPostDir}"
+		# cache
+		local rendered_post_dir="${post##*/}"
+		rendered_post_dir="${rendered_post_dir##*_}"
+		rendered_post_dir="${SSG__generated}/${posts__generated_post_directory}${rendered_post_dir}"
 
-		. "${post}/meta.rc" # for template settings
+		[ ! -e "${rendered_post_dir}" ] && mkdir -p "${rendered_post_dir}"
+
+		. "${post}/meta.rc"
 		posts__post_html_title
 
-		echo -n "${posts__post_header_content}" >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		templates__current_get_part 'top' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		generatePostBox 'noTitleLink' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		templates__current_get_part 'bottom' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		echo -n "${posts__post_footer_content}" >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		echo -n "${posts__post_header_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+		generate_post_box 'no_title_link' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+		templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		echo -n "${posts__post_footer_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 	}
 
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
@@ -111,25 +97,27 @@ __module_name__='posts'
 		fi
 
 		if "${posts__parallel_rendering}"; then
-			generateForPost 'published' &
-		else
-			generateForPost 'published'
+			generate_for_post 'published' &
+			continue
 		fi
+
+		generate_for_post 'published'
 	done
+
 	for post in ${SSG__database}/${posts__dbdir}/hidden_*; do
-		if [ "${post}" = "${SSG__database}/${posts__dbdir}/hidden_*" ]; then
-			echo 'No hidden posts found in database'
+		[ "${post}" = "${SSG__database}/${posts__dbdir}/hidden_*" ] && \
+			echo 'No hidden posts found in database' && \
 			break
-		fi
 
 		if "${posts__parallel_rendering}"; then
-			generateForPost 'hidden' &
-		else
-			generateForPost 'hidden'
+			generate_for_post 'hidden' &
+			continue
 		fi
+
+		generate_for_post 'hidden'
 	done
 
-	unset 'generateForPost'
+	unset 'generate_for_post'
 
 # the files were already copied
 	posts__copy_file()
@@ -142,44 +130,46 @@ __module_name__='posts'
 		posts__generate_list()
 		{
 			local post
-			local currentPageNumber="${1}" # for template
-			local renderedPostDir="${SSG__generated}/${posts__generated_page_directory}${currentPageNumber}" # cache
+			local current_page_number="${1}" # for template
+			local rendered_post_dir="${SSG__generated}/${posts__generated_page_directory}${current_page_number}" # cache
 			local template__html_headers="${posts__list_html_headers}"
 			local template__html_title; posts__list_html_title
 
-			echo "Processing page ${currentPageNumber}"
+			echo "Processing page ${current_page_number}"
 
-			"${posts__no_first_page_mode}" && [ "${currentPageNumber}" = '1' ] && \
-				renderedPostDir="${SSG__generated}/${posts__generated_page_directory}"
+			"${posts__no_first_page_mode}" && [ "${current_page_number}" = '1' ] && \
+				rendered_post_dir="${SSG__generated}/${posts__generated_page_directory}"
 
-			[ ! -e "${renderedPostDir}" ] && mkdir -p "${renderedPostDir}"
+			[ ! -e "${rendered_post_dir}" ] && mkdir -p "${rendered_post_dir}"
 
-			echo -n "${posts__list_header_content}" >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-			templates__current_get_part 'top' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			echo -n "${posts__list_header_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			for post in ${2}; do
 				echo " Adding post ${post##*/}"
 
-				local renderedPost="${post##*_}"
-				generatePostBox >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-				unset 'renderedPost'
+				local rendered_post="${post##*_}"
+				generate_post_box >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+				unset 'rendered_post'
 			done
 
-			if ! templates__current_get_part 'resource' 'posts-pages' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"; then
+			if ! templates__current_get_part 'resource' 'posts-pages' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"; then
 				echo "error: template ${templates__template} does not provide posts-pages.rc"
 			fi
 
-			templates__current_get_part 'bottom' >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
-			echo -n "${posts__list_footer_content}" >> "${renderedPostDir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			echo -n "${posts__list_footer_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 		}
 
 		# reverse order
-		posts__post_pivot=''
-		for post in ${SSG__database}/${posts__dbdir}/public_*; do
-			posts__post_pivot="${post} ${posts__post_pivot}"
-		done
-		post="${posts__post_pivot}"
-		unset 'posts__post_pivot'
+			posts__post_pivot=''
+
+			for post in ${SSG__database}/${posts__dbdir}/public_*; do
+				posts__post_pivot="${post} ${posts__post_pivot}"
+			done
+
+			post="${posts__post_pivot}"
+			unset 'posts__post_pivot'
 
 		posts__list=''
 		posts__list_limit_indicator='1'
@@ -191,17 +181,22 @@ __module_name__='posts'
 				"${posts__no_first_page_mode}" && posts__no_posts_found_path=''
 
 				mkdir -p "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}"
+
 				echo -n "${posts__not_found_header_content}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 				templates__current_get_part 'top' >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
+
 				echo "${posts__label_not_found}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
+
 				templates__current_get_part 'bottom' >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 				echo -n "${posts__not_found_footer_content}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 				unset 'posts__no_posts_found_path'
+
 				break
 			fi
 
 			posts__list="${posts__list} ${post}"
+
 			if [ "${posts__list_limit_indicator}" = "${posts__posts_per_page}" ]; then
 				if "${posts__parallel_rendering}"; then
 					posts__generate_list "${posts__current_page_indicator}" "${posts__list}" &
@@ -212,10 +207,13 @@ __module_name__='posts'
 				posts__list=''
 				posts__list_limit_indicator='1'
 				posts__current_page_indicator="$((posts__current_page_indicator+1))"
-			else
-				posts__list_limit_indicator="$((posts__list_limit_indicator+1))"
+
+				continue
 			fi
+
+			posts__list_limit_indicator="$((posts__list_limit_indicator+1))"
 		done
+
 		[ ! "${posts__list}" = '' ] && if "${posts__parallel_rendering}"; then
 			posts__generate_list "${posts__current_page_indicator}" "${posts__list}" &
 		else
@@ -243,14 +241,18 @@ __module_name__='posts'
 			cp "${SSG__generated}/${posts__generated_page_directory}1/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 		else
 			echo "Generating 'no posts found'"
+
 			echo -n "${posts__not_found_header_content}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 			templates__current_get_part 'top' >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+
 			echo "${posts__label_not_found}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+
 			templates__current_get_part 'bottom' >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 			echo -n "${posts__not_found_footer_content}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 		fi
 	else
-		'Error: posts__enable_post_lists is false - this module cannot be the default module'
+		echo 'Error: posts__enable_post_lists is false - this module cannot be the default module'
+		exit 1
 	fi
 
 exit 0

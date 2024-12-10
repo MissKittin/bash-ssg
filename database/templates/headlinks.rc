@@ -1,11 +1,11 @@
 # import variables from certain modules
-moduleConfig='pages posts posts-arch posts-tags'
-for moduleConfig in ${moduleConfig}; do
-	[ -e "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" ] && \
-		. "${SSG__database}/defaults.rc.d/${moduleConfig}.rc" || \
-		. "${SSG__modules}/${moduleConfig}/defaults.rc.d/${moduleConfig}.rc"
+module_config='pages posts posts-arch posts-tags'
+for module_config in ${module_config}; do
+	[ -e "${SSG__database}/defaults.rc.d/${module_config}.rc" ] && \
+		. "${SSG__database}/defaults.rc.d/${module_config}.rc" || \
+		. "${SSG__modules}/${module_config}/defaults.rc.d/${module_config}.rc"
 done
-unset 'moduleConfig'
+unset 'module_config'
 
 # write menu links
 cat << EOF

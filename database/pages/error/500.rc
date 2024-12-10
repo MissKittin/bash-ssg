@@ -1,10 +1,10 @@
-echo '' > "${renderedScriptPath}/exclude-from-sitemap"
+echo '' > "${rendered_script_path}/exclude-from-sitemap"
 
 template__html_title="Unavailable - ${template__site_title}"
 templates__current_get_part 'top'
 
 cat << EOF
-	<h1 style="text-align: center;">Service unavailable</h1>
+	<h1 style="text-align: center;">Server error</h1>
 EOF
 
 templates__current_get_part 'bottom'

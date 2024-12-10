@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # sitemap.xml generator
+[ ! "${@}" = '' ] && exit 1
 __module_name__='z-a_sitemap'
 
 # defaults variables
@@ -8,62 +9,73 @@ __module_name__='z-a_sitemap'
 # variables
 	. "${SSG__lib}/import-defaults.rc"
 
-# check if enabled
-	if ! "${sitemap__enabled}"; then
-		echo 'Sitemap generation is disabled in settings'
-		find -type f -name 'exclude-from-sitemap' | while read file; do
-			rm "${file}"
-		done
-		exit 0
-	fi
-
-# check variables
+# check variables (1)
 	if [ ! -e "${SSG__generated}" ]; then
 		echo "${SSG__generated} not exists"
 		exit 1
 	fi
+
+cd "${SSG__generated}"
+
+# check if enabled
+	if ! "${sitemap__enabled}"; then
+		echo 'Sitemap generation is disabled in settings'
+
+		find -type f -name 'exclude-from-sitemap' | while read 'file'; do
+			rm "${file}"
+		done
+
+		exit 0
+	fi
+
+# check variables (2)
 	if [ "${sitemap__page_domain}" = '' ] || [ "${sitemap__sitemap_file_name}" = '' ]; then
 		echo 'Error: no domain or sitemap defined'
 		exit 1
 	fi
-	echo 'Generating sitemap...'
+
+echo 'Generating sitemap...'
 
 # save sitemap.xml header
 	echo "${sitemap__header_content}"'<?xml version="1.0" encoding="UTF-8" ?>' > "${SSG__generated}/${sitemap__sitemap_file_name}"
 	echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 
 # find ${defaults__default_file_name}${defaults__default_file_extension} files
-	cd "${SSG__generated}"
-	find -name "${defaults__default_file_name}${defaults__default_file_extension}" -type f | while read file; do
+	find -name "${defaults__default_file_name}${defaults__default_file_extension}" -type f | while read 'file'; do
 		file="${file#?}"
+
 		if [ -e "${SSG__generated}${file%/*}/exclude-from-sitemap" ]; then
 			echo " 'exclude-from-sitemap' exists in ${file%/*} - excluded"
 			rm "${SSG__generated}${file%/*}/exclude-from-sitemap"
-		else
-			echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<loc>${sitemap__page_domain}${file%/*}/</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+
+			continue
 		fi
+
+		echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<loc>${sitemap__page_domain}${file%/*}/</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+		echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 	done
 
 # find other .html files
-	cd "${SSG__generated}"
-	find -name '*.html' -type f -not -name "${defaults__default_file_name}${defaults__default_file_extension}" | while read file; do
+	find -name '*.html' -type f -not -name "${defaults__default_file_name}${defaults__default_file_extension}" | while read 'file'; do
 		file="${file#?}"
+
 		if [ -e "${SSG__generated}${file}__exclude-from-sitemap" ]; then
 			echo " '${SSG__generated}${file}__exclude-from-sitemap' exists - excluded"
 			rm "${SSG__generated}${file}__exclude-from-sitemap"
-		else
-			echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<loc>${sitemap__page_domain}${file}</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-				echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
-			echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+
+			continue
 		fi
+
+		echo '<url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<loc>${sitemap__page_domain}${file}</loc>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<lastmod>$(date '+%Y-%m-%d')</lastmod>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo "<changefreq>${sitemap__param_changefreq}</changefreq>" >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+			echo '<priority>0.5</priority>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
+		echo '</url>' >> "${SSG__generated}/${sitemap__sitemap_file_name}"
 	done
 
 # save sitemap.xml footer
@@ -80,6 +92,7 @@ __module_name__='z-a_sitemap'
 # save info to robots.txt
 	if "${sitemap__save_info_to_robots_txt}"; then
 		[ -e "${SSG__generated}/robots.txt" ] && echo '' >> "${SSG__generated}/robots.txt"
+
 		if [ "${sitemap__gzip_sitemap_xml}" = '' ]; then
 			echo "Sitemap: ${sitemap__page_domain}/${sitemap__sitemap_file_name}" >> "${SSG__generated}/robots.txt"
 		else

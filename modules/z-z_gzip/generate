@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # Compressor module
+[ ! "${@}" = '' ] && exit 1
 __module_name__='z-z_gzip'
 
 # defaults variables
@@ -11,7 +12,7 @@ __module_name__='z-z_gzip'
 if [ "${gzip__compression}" = '' ]; then
 	echo 'Gzip compression is disabled in settings'
 else
-	find ${SSG__generated} -name '*.html' -or -name '*.css' -or -name '*.js' -or -name '*.xml' | while read file; do
+	find ${SSG__generated} -name '*.html' -or -name '*.css' -or -name '*.js' -or -name '*.xml' | while read 'file'; do
 		case "${file##*.}" in
 			'html')
 				"${gzip__process_html}" || continue

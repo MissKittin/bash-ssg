@@ -3,7 +3,7 @@
 # for template_default
 
 # you can treat the whole div as a link to the post (1)
-#"${template__no_title_link}" || echo '<a href="'"${defaults__url_prefix}/${posts__generated_post_directory}${renderedPost}"'">'
+#"${template__no_title_link}" || echo '<a href="'"${defaults__url_prefix}/${posts__generated_post_directory}${rendered_post}"'">'
 
 [ ! "${posts__post_id}" = '' ] && posts__post_id_class=" post-id-${posts__post_id}"
 cat << EOF

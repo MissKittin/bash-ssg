@@ -1,20 +1,26 @@
 #!/usr/bin/env sh
 # Copy static files to public directory
+[ ! "${@}" = '' ] && exit 1
 __module_name__='static'
 
 static__dbdir='static'
 
 if [ -e "${SSG__database}/${static__dbdir}" ]; then
 		echo 'Copying static files'
+
 		[ ! -e "${SSG__generated}" ] && mkdir -p "${SSG__generated}"
 		cp -rfp ${SSG__database}/${static__dbdir}/* "${SSG__generated}"
+
 		for hiddenfile in ${SSG__database}/${static__dbdir}/.*; do
-			if [ ! "${hiddenfile}" = "${SSG__database}/${static__dbdir}/." ] && [ ! "${hiddenfile}" = "${SSG__database}/${static__dbdir}/.." ]; then
-				cp -rfp "${hiddenfile}" "${SSG__generated}"
+			if [ "${hiddenfile}" = "${SSG__database}/${static__dbdir}/." ] || [ "${hiddenfile}" = "${SSG__database}/${static__dbdir}/.." ]; then
+				continue
 			fi
+
+			cp -rfp "${hiddenfile}" "${SSG__generated}"
 		done
 else
-	echo '"'"${static__dbdir}"'" directory not found in database'
+	echo 'Error: "'"${static__dbdir}"'" directory not found in database'
+	exit 1
 fi
 
 # you can't do that
