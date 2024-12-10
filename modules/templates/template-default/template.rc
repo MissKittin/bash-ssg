@@ -51,13 +51,19 @@
 # Import resource
 	if [ "${2}" = 'resource' ]; then
 		if [ ! "${3}" = '' ] && [ -e "${template_location}/resources/${3}.rc" ]; then
+			if [ -e "${SSG__database}/${templates__dbdir}${__template_name__}.patches/resources/${3}.rc" ]; then
+				. "${SSG__database}/${templates__dbdir}${__template_name__}.patches/resources/${3}.rc"
+				return 0
+			fi
+
 			. "${template_location}/resources/${3}.rc"
-			return '0'
+
+			return 0
 		fi
 
 		echo " - Resource ${3} not found in template ${__template_name__}" >&2
 
-		return '1'
+		return 1
 	fi
 
 # Print template part
@@ -70,4 +76,8 @@
 		return 1
 	fi
 
-	. "${template_location}/parts/${template_part}"
+	if [ -e "${SSG__database}/${templates__dbdir}${__template_name__}.patches/parts/${template_part}" ]; then
+		. "${SSG__database}/${templates__dbdir}${__template_name__}.patches/parts/${template_part}"
+	else
+		. "${template_location}/parts/${template_part}"
+	fi
