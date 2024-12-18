@@ -132,8 +132,11 @@ __module_name__='posts'
 			local post
 			local current_page_number="${1}" # for template
 			local rendered_post_dir="${SSG__generated}/${posts__generated_page_directory}${current_page_number}" # cache
-			local template__html_headers="${posts__list_html_headers}"
-			local template__html_title; posts__list_html_title
+			local template__html_headers=''
+			local template__html_title=''
+
+			posts__list_html_headers
+			posts__list_html_title
 
 			echo "Processing page ${current_page_number}"
 

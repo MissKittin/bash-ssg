@@ -38,7 +38,10 @@ __module_name__='posts-tags'
 # tag list processing
 	posts_tags__generate_tag_list()
 	{
-		local template__html_headers="${posts_tags__list_html_headers}"
+		local template__html_headers=''
+		local template__html_title=''
+
+		posts_tags__list_html_headers
 		posts_tags__html_title
 
 		echo -n "${posts_tags__list_header_content}"
@@ -74,9 +77,10 @@ __module_name__='posts-tags'
 			local current_page_number="${1}" # for template
 			local rendered_post
 			local rendered_page_dir
-			local template__html_headers="${posts_tags__listing_html_headers}"
-			local template__html_title
+			local template__html_headers=''
+			local template__html_title=''
 
+			posts_tags__listing_html_headers
 			posts_tags__list_html_title
 
 			# cache

@@ -16,6 +16,11 @@
 	}
 
 /* miscellaneous styles - theme */
+	a,
+	a:hover,
+	a:visited {
+		color: #000000;
+	}
 	del {
 		color: #666666;
 	}

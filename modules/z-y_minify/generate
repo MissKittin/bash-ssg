@@ -14,7 +14,10 @@ __module_name__='z-y_minify'
 	{
 		find ${SSG__generated} -name *.html | while read file; do
 			echo "Processing $(echo -n "${file}" | sed 's|'"${SSG__generated}"'||g')"
+
 			sed -i -e ':a;N;$!ba;s/>\s*</></g' "${file}" # https://stackoverflow.com/questions/12376368/minify-html-files-in-text-html-templates
+			"${minify__process_html_comments}" && \
+				sed -i 's/<!--\(.*\)*-->//g' "${file}" # https://superuser.com/questions/307768/how-to-remove-html-comment-tags-using-sed
 		done
 	}
 	minify_css()

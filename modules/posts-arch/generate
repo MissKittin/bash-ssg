@@ -43,7 +43,10 @@ __module_name__='posts-arch'
 # date list processing
 	posts_arch__generate_date_list()
 	{
-		local template__html_headers="${posts_arch__list_html_headers}"
+		local template__html_headers=''
+		local template__html_title=''
+
+		posts_arch__list_html_headers
 		posts_arch__html_title
 
 		echo -n "${posts_arch__list_header_content}"
@@ -90,7 +93,10 @@ __module_name__='posts-arch'
 				if [ "${current_post_number}" = '1' ]; then
 					echo " Processing page ${current_page_number}"
 
-					template__html_headers="${posts_arch__listing_html_headers}"
+					template__html_headers=''
+					template__html_title=''
+
+					posts_arch__listing_html_headers
 					posts_arch__list_html_title
 
 					echo -n "${posts_arch__listing_header_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"

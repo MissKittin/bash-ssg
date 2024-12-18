@@ -11,3 +11,12 @@
 		font-size: 10px;
 	}
 }
+@media only screen and (max-width: 460px) {
+	#headlinks {
+		width: 220px;
+	}
+	#page-content,
+	#footer {
+		width: 260px;
+	}
+}

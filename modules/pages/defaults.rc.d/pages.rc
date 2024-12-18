@@ -1,4 +1,5 @@
 # pages module configuration
-pages__generated_directory='page/'     # must be ended with slash or empty
+pages__generated_directory='page/'       # must be ended with slash or empty
 pages__default_page='home'
-pages__parallel_rendering='false'      # speed up pages rendering
+pages__default_page_mv_all_files='false' # move all files from generated/page/home to generated, not just index.html
+pages__parallel_rendering='false'        # speed up pages rendering

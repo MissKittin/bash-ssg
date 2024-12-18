@@ -3,23 +3,37 @@ posts_tags__generated_directory='tag'  # directory for tags, cannot be empty
 posts_tags__enable_tag_lists='true'    # generate list with tags
 posts_tags__label_not_found='<h1 style="text-align: center; display: block;">No tags found</h1>' # if no tags found
 posts_tags__parallel_rendering='false' # speed up tag lists rendering
-posts_tags__list_html_headers=''       # add code to <head> section in post list
-posts_tags__listing_html_headers=''    # add code to <head> section in of list with selected posts
 posts_tags__list_header_content=''     # add at the beginning of the tag list eg. "<?php header('Content-Type: application/rss+xml'); ?>"
 posts_tags__list_footer_content=''     # add at the beginning of the tag list eg. '<?php my_function(); ?>'
 posts_tags__listing_header_content=''  # add at the beginning of list with selected posts eg. "<?php header('Content-Type: application/rss+xml'); ?>"
 posts_tags__listing_footer_content=''  # add at the beginning of list with selected posts eg. '<?php my_function(); ?>'
 
-# ${template__site_title} is from templates module
+posts_tags__list_html_headers()
+{
+	# add code to <head> section in post list
+
+	template__html_headers='<meta property="og:title" content="Tags - '"${template__site_title}"'">'
+}
+posts_tags__listing_html_headers()
+{
+	# add code to <head> section in of list with selected posts
+
+	template__html_headers='<meta property="og:title" content="Posts tagged with ${tag} - '"${template__site_title}"'">'
+}
 posts_tags__html_title()
 {
+	# ${template__site_title} is from templates module
+
 	template__html_title="Tags - ${template__site_title}"
 }
 posts_tags__list_html_title()
 {
+	# ${template__site_title} is from templates module
+
 	if [ "${current_page_number}" = '1' ]; then
 		template__html_title="Tag ${tag} - ${template__site_title}"
-	else
-		template__html_title="Tag ${tag} - Page ${current_page_number} - ${template__site_title}"
+		return
 	fi
+
+	template__html_title="Tag ${tag} - Page ${current_page_number} - ${template__site_title}"
 }

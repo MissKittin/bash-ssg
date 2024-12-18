@@ -101,7 +101,12 @@ __module_name__='pages'
 	echo "This is default module - moving '${pages__default_page}' page"
 
 	if [ -e "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" ]; then
-		mv "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+		if "${pages__default_page_mv_all_files}"; then
+			mv ${SSG__generated}/${pages__generated_directory}${pages__default_page}/* "${SSG__generated}/"
+		else
+			mv "${SSG__generated}/${pages__generated_directory}${pages__default_page}/${defaults__default_file_name}${defaults__default_file_extension}" "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+		fi
+
 		rmdir "${SSG__generated}/${pages__generated_directory}${pages__default_page}" # will be failed if other files were copied
 
 		exit 0
