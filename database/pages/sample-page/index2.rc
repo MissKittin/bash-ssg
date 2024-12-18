@@ -53,3 +53,6 @@ templates__current_get_part 'bottom'
 # copy additional files or directories (pages__copy_file input-file-or-dir output-file-or-dir)
 #pages__copy_file 'assets/square.css' 'square.css' # copy one file to generated/page/sample-page/page-2 directory
 #pages__copy_file 'assets' 'assets' # copy the whole directory to generated/page/sample-page/page-2
+
+# you can replace the ${rendered_page_url} string with /page/sample-page/page-2 in generated/page/sample-page/page-2/square.css
+#sed -i 's|\${rendered_page_url}|'"${defaults__url_prefix}/${pages__generated_directory}${script_path%/*}${rendered_script_path_subpath}"'|g' "${rendered_script_path}/square.css"

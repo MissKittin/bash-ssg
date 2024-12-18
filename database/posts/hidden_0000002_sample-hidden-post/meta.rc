@@ -53,10 +53,16 @@ if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
 	#echo '2020-12-21' > "${rendered_post_dir}/sitemap-lastmod"
 	#echo 'always' > "${rendered_post_dir}/sitemap-changefreq"
 	#echo '0.9' > "${rendered_post_dir}/sitemap-priority"
+
+	# hint: you can automate lastmod date conversion
+	#echo "${posts__post_date}" | awk -F'.' '{ printf("%04d-%02d-%02d", $3, $2, $1) }' > "${rendered_post_dir}/sitemap-lastmod"
 fi
 
 # copy additional files or directories (posts__copy_file input-file-or-dir output-file-or-dir)
 #if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
-	#posts__copy_file 'assets/post-font.css' 'style.css' # copy one file to generated/post/sample-hidden-post directory
+	#posts__copy_file 'assets/post-font.css' 'style.css' # copy one file to generated/post/sample-hidden-post/style.css
 	#posts__copy_file 'assets' 'assets' # copy the whole directory to generated/post/sample-hidden-post
+
+	# you can replace the ${rendered_post_url} string with /post/sample-hidden-post in generated/post/sample-hidden-post/style.css
+	#sed -i 's|\${rendered_post_url}|'"${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}"'|g' "${rendered_post_dir}/style.css"
 #fi

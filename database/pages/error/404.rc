@@ -3,7 +3,7 @@ echo '' > "${rendered_script_path}/exclude-from-sitemap"
 template__html_title="Not found - ${template__site_title}"
 templates__current_get_part 'top'
 
-cat << EOF
+cat << 'EOF'
 	<h1 style="text-align: center;">Page not found</h1>
 EOF
 
