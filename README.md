@@ -16,7 +16,7 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 ```
 
 ### How to use
-1. open `database` directory
+1. rename the `database.example` directory to `database` and open it
 2. create first page:
 	* in `pages/sample-page/index.rc` is the page definition
 	* in `pages/sample-page/entrypoint.rc` are names of the scripts that will be rendered

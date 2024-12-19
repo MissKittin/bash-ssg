@@ -11,7 +11,7 @@ __module_name__='z-a_sitemap'
 
 # check variables (1)
 	if [ ! -e "${SSG__generated}" ]; then
-		echo "${SSG__generated} not exists"
+		echo "error: '${SSG__generated}' directory does not exist"
 		exit 1
 	fi
 

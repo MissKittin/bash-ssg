@@ -45,6 +45,12 @@ echo ' :: Checking required tools'
 		return '0'
 	}
 
+# database check
+	if [ ! -e "${SSG__database}" ]; then
+		echo "error: '${SSG__database}' directory does not exist"
+		exit 1
+	fi
+
 # tools check
 	if "${entrypoint_check_tools}"; then
 		echo ' :: Checking required tools'
