@@ -49,7 +49,7 @@ __module_name__='posts-arch'
 		posts_arch__list_html_headers
 		posts_arch__html_title
 
-		echo -n "${posts_arch__list_header_content}"
+		posts_arch__list_header_content
 		templates__current_get_part 'top'
 
 		if ! templates__current_get_part 'resource' 'arch-list'; then
@@ -57,16 +57,16 @@ __module_name__='posts-arch'
 		fi
 
 		templates__current_get_part 'bottom'
-		echo -n "${posts_arch__list_footer_content}"
+		posts_arch__list_footer_content
 	}
 
 	[ ! -e "${SSG__generated}/${posts_arch__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_arch__generated_directory}"
 
 	if "${posts_arch__enable_date_lists}"; then
 		if "${posts_arch__parallel_rendering}"; then
-			posts_arch__generate_date_list >> "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
+			posts_arch__generate_date_list > "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
 		else
-			posts_arch__generate_date_list >> "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts_arch__generate_date_list > "${SSG__generated}/${posts_arch__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
 		fi
 	else
 		echo 'Date list generation is disabled'
@@ -99,7 +99,7 @@ __module_name__='posts-arch'
 					posts_arch__listing_html_headers
 					posts_arch__list_html_title
 
-					echo -n "${posts_arch__listing_header_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+					posts_arch__listing_header_content > "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 					templates__current_get_part 'top' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 				fi
 
@@ -113,7 +113,7 @@ __module_name__='posts-arch'
 					fi
 
 					templates__current_get_part 'bottom' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
-					echo -n "${posts_arch__listing_footer_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+					posts_arch__listing_footer_content >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 					current_post_number='1'
 					current_page_number="$((current_page_number+1))"
@@ -130,7 +130,7 @@ __module_name__='posts-arch'
 				fi
 
 				templates__current_get_part 'bottom' >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
-				echo -n "${posts_arch__listing_footer_content}" >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
+				posts_arch__listing_footer_content >> "${rendered_page_dir}${rendered_page_dir_number}/${defaults__default_file_name}${defaults__default_file_extension}"
 			fi
 		}
 

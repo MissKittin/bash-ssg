@@ -3,11 +3,35 @@ posts_tags__generated_directory='tag'  # directory for tags, cannot be empty
 posts_tags__enable_tag_lists='true'    # generate list with tags
 posts_tags__label_not_found='<h1 style="text-align: center; display: block;">No tags found</h1>' # if no tags found
 posts_tags__parallel_rendering='false' # speed up tag lists rendering
-posts_tags__list_header_content=''     # add at the beginning of the tag list eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts_tags__list_footer_content=''     # add at the beginning of the tag list eg. '<?php my_function(); ?>'
-posts_tags__listing_header_content=''  # add at the beginning of list with selected posts eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts_tags__listing_footer_content=''  # add at the beginning of list with selected posts eg. '<?php my_function(); ?>'
 
+posts_tags__list_header_content()
+{
+	# add at the beginning of the tag list eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts_tags__list_footer_content()
+{
+	# add at the end of the tag list eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
+posts_tags__listing_header_content()
+{
+	# add at the beginning of list with selected posts eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts_tags__listing_footer_content()
+{
+	# add at the end of list with selected posts eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
 posts_tags__list_html_headers()
 {
 	# add code to <head> section in post list

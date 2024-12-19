@@ -81,13 +81,13 @@ __module_name__='posts'
 		. "${post}/meta.rc"
 		posts__post_html_title
 
-		echo -n "${posts__post_header_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		posts__post_header_content > "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 		templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 		generate_post_box 'no_title_link' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 		templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		echo -n "${posts__post_footer_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+		posts__post_footer_content >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 	}
 
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
@@ -145,7 +145,7 @@ __module_name__='posts'
 
 			[ ! -e "${rendered_post_dir}" ] && mkdir -p "${rendered_post_dir}"
 
-			echo -n "${posts__list_header_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts__list_header_content > "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 			templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			for post in ${2}; do
@@ -161,7 +161,7 @@ __module_name__='posts'
 			fi
 
 			templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-			echo -n "${posts__list_footer_content}" >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts__list_footer_content >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 		}
 
 		# reverse order
@@ -185,13 +185,13 @@ __module_name__='posts'
 
 				mkdir -p "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}"
 
-				echo -n "${posts__not_found_header_content}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
+				posts__not_found_header_content > "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 				templates__current_get_part 'top' >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 				echo "${posts__label_not_found}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 				templates__current_get_part 'bottom' >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
-				echo -n "${posts__not_found_footer_content}" >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
+				posts__not_found_footer_content >> "${SSG__generated}/${posts__generated_page_directory}${posts__no_posts_found_path}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 				unset 'posts__no_posts_found_path'
 
@@ -245,13 +245,13 @@ __module_name__='posts'
 		else
 			echo "Generating 'no posts found'"
 
-			echo -n "${posts__not_found_header_content}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts__not_found_header_content > "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 			templates__current_get_part 'top' >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			echo "${posts__label_not_found}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			templates__current_get_part 'bottom' >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
-			echo -n "${posts__not_found_footer_content}" >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts__not_found_footer_content >> "${SSG__generated}/${defaults__default_file_name}${defaults__default_file_extension}"
 		fi
 	else
 		echo 'Error: posts__enable_post_lists is false - this module cannot be the default module'

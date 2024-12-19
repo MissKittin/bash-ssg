@@ -3,18 +3,42 @@ posts_arch__generated_directory='arch' # directory for archive, cannot be empty
 posts_arch__enable_date_lists='true'   # generate list with archive
 posts_arch__label_not_found='<h1 style="text-align: center; display: block;">No posts found</h1>' # if no posts found with arch_* file
 posts_arch__parallel_rendering='false' # speed up archive lists rendering
-posts_arch__list_header_content=''     # add at the beginning of the archive list eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts_arch__list_footer_content=''     # add at the beginning of the archive list eg. '<?php my_function(); ?>'
-posts_arch__listing_header_content=''  # add at the beginning of list with selected posts eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts_arch__listing_footer_content=''  # add at the beginning of list with selected posts eg. '<?php my_function(); ?>'
 
-# convert YYYY-MM-DD to DD.MM.YYYY
+# convert YYYY-MM-DD to DD.MM.YYYY (this function can be removed)
 posts_arch__format_date_label()
 {
 	#echo "${date}" # leave untouched
 	echo "${date}" | awk -F'-' '{ printf("%02d.%02d.%04d", $3, $2, $1) }'
 }
 
+posts_arch__list_header_content()
+{
+	# add at the beginning of the archive list eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts_arch__list_footer_content()
+{
+	# add at the end of the archive list eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
+posts_arch__listing_header_content()
+{
+	# add at the beginning of list with selected posts eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts_arch__listing_footer_content()
+{
+	# add at the end of list with selected posts eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
 posts_arch__list_html_headers()
 {
 	# add code to <head> section in post list

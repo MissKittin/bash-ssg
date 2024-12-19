@@ -8,13 +8,49 @@ posts__no_first_page_mode='false'       # use url /post instead of /post/1 (set 
 posts__posts_per_page='5'
 posts__label_not_found='<h1 style="text-align: center; display: block;">No posts found</h1>'
 posts__parallel_rendering='false'       # speed up post rendering
-posts__list_header_content=''           # add at the beginning of the post list eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts__list_footer_content=''           # add at the beginning of the post list eg. '<?php my_function(); ?>'
-posts__post_header_content=''           # add at the beginning of the seletcted post eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts__post_footer_content=''           # add at the beginning of the seletcted post eg. '<?php my_function(); ?>'
-posts__not_found_header_content=''      # add at the beginning of the no posts found eg. "<?php header('Content-Type: application/rss+xml'); ?>"
-posts__not_found_footer_content=''      # add at the beginning of the no posts found eg. '<?php my_function(); ?>'
 
+posts__list_header_content()
+{
+	# add at the beginning of the post list eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts__list_footer_content()
+{
+	# add at the end of the post list eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
+posts__post_header_content()
+{
+	# add at the beginning of the seletcted post eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts__post_footer_content()
+{
+	# add at the end of the seletcted post eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
+posts__not_found_header_content()
+{
+	# add at the beginning of the no posts found eg.
+	# echo -n "<?php header('Content-Type: text/html'); ?>"
+
+	echo -n ''
+}
+posts__not_found_footer_content()
+{
+	# add at the end of the no posts found eg.
+	# echo -n '<?php my_function(); ?>'
+
+	echo -n ''
+}
 posts__list_html_headers()
 {
 	# add code to <head> section in post list

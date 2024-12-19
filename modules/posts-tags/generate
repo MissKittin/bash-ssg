@@ -44,7 +44,7 @@ __module_name__='posts-tags'
 		posts_tags__list_html_headers
 		posts_tags__html_title
 
-		echo -n "${posts_tags__list_header_content}"
+		posts_tags__list_header_content
 		templates__current_get_part 'top'
 
 		if ! templates__current_get_part 'resource' 'tags-list'; then
@@ -52,16 +52,16 @@ __module_name__='posts-tags'
 		fi
 
 		templates__current_get_part 'bottom'
-		echo -n "${posts_tags__list_footer_content}"
+		posts_tags__list_footer_content
 	}
 
 	[ ! -e "${SSG__generated}/${posts_tags__generated_directory}" ] && mkdir -p "${SSG__generated}/${posts_tags__generated_directory}"
 
 	if "${posts_tags__enable_tag_lists}"; then
 		if "${posts_tags__parallel_rendering}"; then
-			posts_tags__generate_tag_list >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
+			posts_tags__generate_tag_list > "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}" &
 		else
-			posts_tags__generate_tag_list >> "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts_tags__generate_tag_list > "${SSG__generated}/${posts_tags__generated_directory}/${defaults__default_file_name}${defaults__default_file_extension}"
 		fi
 	else
 		echo 'Tag list generation is disabled'
@@ -92,7 +92,7 @@ __module_name__='posts-tags'
 
 			[ ! -e "${rendered_page_dir}" ] && mkdir -p "${rendered_page_dir}"
 
-			echo -n "${posts_tags__listing_header_content}" >> "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts_tags__listing_header_content > "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 			templates__current_get_part 'top' >> "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 
 			for post in ${2}; do
@@ -112,7 +112,7 @@ __module_name__='posts-tags'
 			fi
 
 			templates__current_get_part 'bottom' >> "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-			echo -n "${posts_tags__listing_footer_content}" >> "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+			posts_tags__listing_footer_content >> "${rendered_page_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
 		}
 
 		for tag in ${posts__tag_list}; do
