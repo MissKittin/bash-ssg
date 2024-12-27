@@ -1,7 +1,7 @@
 # minify module configuration
-minify__process_all='false'
-minify__process_html="${minify__process_all}"
+minify__process_all='false'           # overwrites values for minify__process_html, minify__process_css and minify__process_js
+minify__process_html='false'
 minify__process_html_comments='false' # remove <!--(.*)-->
-minify__process_css="${minify__process_all}"
-minify__process_js="${minify__process_all}"
+minify__process_css='false'
+minify__process_js='false'
 minify__parallel_rendering='false'    # speed up mummification

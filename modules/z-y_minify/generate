@@ -9,6 +9,12 @@ __module_name__='z-y_minify'
 # variables
 	. "${SSG__lib}/import-defaults.rc"
 
+	if "${minify__process_all}"; then
+		minify__process_html='true'
+		minify__process_css='true'
+		minify__process_js='true'
+	fi
+
 # functions
 	minify_html()
 	{
