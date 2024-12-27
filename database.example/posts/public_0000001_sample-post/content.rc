@@ -1,4 +1,4 @@
-# write post content
+# you can write a common top content for the post and introduction
 cat << EOF
 	<!-- you can apply post style via javascript -->
 	<script>
@@ -23,7 +23,12 @@ cat << EOF
 
 	<!-- applying styles via template__html_headers wont work on the post list, you need to do it here -->
 	<link rel="stylesheet" type="text/css" href="${defaults__url_prefix}/${posts__generated_post_directory}${post##*_}/style.css">
+EOF
 
+if [ "${current_page_number}" = '' ]; then
+
+# write post content
+cat << EOF
 	<p style="text-align: center;">This is the sample post.</p>
 	<p>
 		Post directory name:
@@ -40,8 +45,7 @@ cat << EOF
 	<p>
 		Tags: create <span style="font-weight: bold;">tags</span> directory in post's dir,
 		and create empty file with tag name (without # and whitespaces).
-	<p>
-	<p>Click to the post title and check page source for <span style="font-weight: bold;">&lt;!-- this code will be displayed in this posts page header --&gt;</span></p>
+	</p>
 	<p id="post-green-font">If this text is green, <span style="font-weight: bold;">posts__copy_file</span> function works.</p>
 EOF
 
@@ -52,3 +56,17 @@ EOF
 ## Header
 #Content
 #EOF
+
+else
+
+# write an introduction displayed in the post list
+cat << 'EOF'
+	<p style="text-align: center;">This is the sample post.</p>
+EOF
+
+fi
+
+# you can write a common bottom content for the post and introduction
+cat << 'EOF'
+	<p>Click to the post title and check page source for <span style="font-weight: bold;">&lt;!-- this code will be displayed in this posts page header --&gt;</span></p>
+EOF

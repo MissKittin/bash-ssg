@@ -1,9 +1,14 @@
 # use queue number as post id (class="post-id-0000001") (optional)
 posts__post_id="${post##*/}"; posts__post_id="${posts__post_id#*_}"; posts__post_id="${posts__post_id%%_*}"
 
+# if you have an arch_* file in your post directory, you can read the date from it
+#for posts__post_date in ${post}/arch_*; do break; done
+#posts__post_date_raw="${posts__post_date##*_}"
+#posts__post_date="$(echo ${posts__post_date_raw} | awk -F'-' '{ printf("%02d.%02d.%04d", $3, $2, $1) }')"
+
 # set post metadata
 posts__post_title="Sample multipage post"
-posts__post_date='21.12.2020'
+posts__post_date='21.12.2020' # remove if you read date from arch_* filename
 
 # redirect link address to page
 template__no_title_link='true'
@@ -48,7 +53,7 @@ if [ ! "${__module_name__}" = 'posts-rss' ]; then
 	for post_tag in ${post}/tags/*; do
 		[ "${post_tag}" = "${post}/tags/*" ] && break
 
-		template__html_headers="${template__html_headers}"'<meta property="tag" content="'"${post_tag##*/}"'">'
+		template__html_headers="${template__html_headers}"'<meta property="article:tag" content="'"${post_tag##*/}"'">'
 	done
 
 	unset 'post_tag'
@@ -63,6 +68,9 @@ if [ "${__module_name__}" = 'posts' ] && [ "${1}" = 'no_title_link' ]; then
 
 	# hint: you can automate lastmod date conversion
 	#echo "${posts__post_date}" | awk -F'.' '{ printf("%04d-%02d-%02d", $3, $2, $1) }' > "${rendered_post_dir}/sitemap-lastmod"
+
+	# hint: if you read the date from the arch_* filename you can use it in its raw form
+	#echo "${posts__post_date_raw}" > "${rendered_post_dir}/sitemap-lastmod"
 fi
 
 # copy additional files or directories (posts__copy_file input-file-or-dir output-file-or-dir)
