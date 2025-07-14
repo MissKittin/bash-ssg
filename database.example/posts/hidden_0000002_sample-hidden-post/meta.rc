@@ -1,3 +1,6 @@
+# always unset this at the beginning of each meta.rc!
+unset 'posts__post_id'
+
 # if you have an arch_* file in your post directory, you can read the date from it
 #for posts__post_date in ${post}/arch_*; do break; done
 #posts__post_date_raw="${posts__post_date##*_}"
@@ -24,7 +27,7 @@ if [ "${__module_name__}" = 'posts-rss' ]; then
 	#posts_rss__post_description="$(. "${post}/content.rc" | sed 's/\&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')"
 
 	# hint: if you use BusyBox you can automate the date conversion:
-	#posts_rss__post_pubdate="$(date -d ${posts__post_date} -D '%d.%m.%y' '+%a, %d %b %Y %T %z')"
+	#posts_rss__post_pubdate="$(date -d ${posts__post_date} -D '%d.%m.%Y' '+%a, %d %b %Y %T %z')"
 
 	# hint: you can add your xml code to the <item> tag
 	#posts_rss__post_xml='<author>admin@bash.ssg</author>'
