@@ -16,7 +16,7 @@ __module_name__='z-y_minify'
 	fi
 
 # functions
-	. "${0%/*}/defaults.rc.d/functions.rc"
+	. "${0%/*}/functions.rc"
 
 # minify html
 	if "${minify__process_html}"; then
