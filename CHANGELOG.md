@@ -8,6 +8,7 @@
 
 - Added `defer` for template `js` in `template-default`
 - Added the ability to change the template name (to e.g. `template-default-new`) in all templates
+- Moved functions to a separate file in the `minify` module
 
 ### Removed
 
