@@ -41,7 +41,8 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 5. put static files in the `static` directory and replace `database/static/assets/favicon.ico`  
 	**warning:** be careful with dotfiles - if you remove them from `database/static`, they may still remain in the `generated` directory  
 	this is the intended action to be able to add VCS to this directory
-6. edit files in the `templates` directory
+6. edit files in the `templates` directory  
+	you can also add custom templates to this directory (e.g. `database/templates/my-template`)
 7. edit the settings in `defaults.rc.d`
 8. if you want to run something before generating, enter the commands into the `database/generate-hooks/pre-generate.rc`  
 	before exiting it looks for the `database/generate-hooks/post-generate.rc` file

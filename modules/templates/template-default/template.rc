@@ -1,5 +1,6 @@
 # Template metadata
 	__template_name__='template-default'
+	[ ! "${1}" = '' ] && __template_name__="${1}"
 
 # Copy template to the "generated" directory
 	if [ ! -e "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.css" ]; then

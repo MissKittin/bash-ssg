@@ -12,7 +12,7 @@ cat << EOF
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="${defaults__url_prefix}/${template__generated_assets_directory}${__template_name__}.css">
-		<script src="${defaults__url_prefix}/${template__generated_assets_directory}${__template_name__}.js"></script>
+		<script src="${defaults__url_prefix}/${template__generated_assets_directory}${__template_name__}.js" defer></script>
 EOF
 
 # user defined headers

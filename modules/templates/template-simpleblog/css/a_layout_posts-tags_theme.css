@@ -1,6 +1,0 @@
-/* posts-tags module patch - theme */
-#taglist a:link,
-#taglist a:hover,
-#taglist a:visited {
-	color: #550000;
-}
