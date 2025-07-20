@@ -70,7 +70,6 @@ defaults__url_prefix="<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').
 * `templates`
 	* `template-default`
 	* `template-default-nojs`
-	* `template-simpleblog`
 
 ### Additional modules
 * `pages` - for generating static pages
@@ -80,8 +79,8 @@ defaults__url_prefix="<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').
 * `posts-tags` - extension of the `posts` module which renders lists of all tags
 * `static` - copies static files
 * `sitemap` - generates `sitemap.xml`
-* `minify` - css, js and html minifier
-* `gzip` - compresses all generated css, js, html and xml files
+* `minify` - `css`, `js` and `html` minifier
+* `gzip` - compresses all generated `css`, `js`, `html` and `xml` files
 
 ### Libraries
 * `import-defaults.rc` - imports all variables from `database/defaults.rc.d`

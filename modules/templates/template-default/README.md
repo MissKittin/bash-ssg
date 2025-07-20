@@ -1,12 +1,18 @@
 # Default template for Bash SSG
-All files in `js` and `css` directory will be merged to `assets/template-default.js` and `assets/template-default.css` files.  
 If you want include other files, use `static` module.
 
-* `css` - styles
-* `js` - scripts
+* `css` - styles  
+	all files from this directory will be merged to `assets/template-default.css` file
+* `js` - scripts  
+	all files from this directory will be merged to `assets/template-default.js` file
 * `parts` - HTMLs: top and bottom part
 * `resources` - middle parts for modules
 * `template.rc` - script that setups template in `generated` directory, condenses scripts and styles and prints template parts and resources
+
+### Installation
+Place all files in the `database/templates/template-default` directory  
+or in the `modules/templates/template-default` directory  
+and edit the appropriate configuration file in `database/defaults.rc.d` to activate this template.
 
 ### Resources
 This template supports the following modules:
@@ -17,4 +23,6 @@ This template supports the following modules:
 * posts-tags
 
 ### Patching template
-Create `database/templates/template-default.patches`, place new files in this directory (keep template's directory tree) and edit.
+Create `database/templates/template-default.patches`,  
+place new files in this directory (keep template's directory tree)  
+and edit.
