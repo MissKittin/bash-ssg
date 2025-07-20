@@ -1,0 +1,29 @@
+ssg_gzip()
+{
+	# Usage:
+	# ssg_gzip 5 'true' '*.ext1 *.ext2 *.extn'
+	# Where:
+	# true allows the .gz extension to be removed
+	# and 5 is the compression level [1-9]
+
+	local find_args=''
+	local extension
+
+	[ "${1}" = '' ] && return
+	[ "${2}" = '' ] && return
+
+	for extension in ${3}; do
+		[ ! "${find_args}" = '' ] && find_args="${find_args} -or"
+		find_args="${find_args} -name ${extension}"
+	done
+
+	[ "${find_args}" = '' ] && return
+
+	find ${SSG__generated} ${find_args} | while read 'file'; do
+		echo "Zipping $(echo -n "${file}" | sed 's|'"${SSG__generated}"'||g')"
+		gzip "-${1}" "${file}"
+
+		"${2}" && \
+			mv "${file}.gz" "${file}"
+	done
+}
