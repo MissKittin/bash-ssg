@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 # Bash Static Site Generator - entry point
-# 2021 2024 MissKittin@GitHub
-# Required tools for entrypoint: date dirname readlink tr sort cat mv rm
+# Required tools for entrypoint: cat date dirname readlink tr sort mv rm
 
 echo ' :: Checking required tools'
 	for tool in 'dirname' 'readlink'; do
@@ -25,12 +24,25 @@ echo ' :: Checking required tools'
 	[ -d "${SSG__root}/bin" ] && \
 		export PATH="${SSG__root}/bin:${PATH}"
 
+# check entrypoint tools
+	for tool in 'cat' 'date' 'tr' 'sort' 'mv' 'rm'; do
+		echo -n "Checking '${tool}'"
+
+		if ! command -v "${tool}" > /dev/null 2>&1; then
+			echo ' [FAIL]'
+			exit 1
+		fi
+
+		echo ' [ OK ]'
+	done
+
 # execution time measurement (1)
-	entrypoint_start_time="$(date '+%s')"
+	entrypoint_start_time="$(date '+%s' 2>/dev/null)"
 
 # local variables
 	entrypoint_check_modules='true'
 	entrypoint_check_tools='true'
+
 	. "${SSG__lib}/import-defaults.rc"
 
 # functions
@@ -51,10 +63,13 @@ echo ' :: Checking required tools'
 		exit 1
 	fi
 
-# tools check
+# modules tools check
 	if "${entrypoint_check_tools}"; then
-		echo ' :: Checking required tools'
-		module_required_tools='date tr sort cat mv rm' # for entrypoint
+		echo ' :: Checking required modules tools'
+		module_required_tools=''
+
+		[ -e "${SSG__database}/command-stack" ] && \
+			module_required_tools="$(cat "${SSG__database}/command-stack")"
 
 		for module in ${SSG__modules}/* ${SSG__user_modules}/*; do
 			[ "${module}" = "${SSG__modules}/*" ] && continue

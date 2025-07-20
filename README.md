@@ -46,7 +46,9 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 7. edit the settings in `defaults.rc.d`
 8. if you want to run something before generating, enter the commands into the `database/generate-hooks/pre-generate.rc`  
 	before exiting it looks for the `database/generate-hooks/post-generate.rc` file
-9. run `./generate`  
+9. you can create a `command-stack` file in the `database` with a list of the tools you use  
+	you'll be notified if any are missing
+10. run `./generate`  
 	if you want to log the output, run `./generate > bash-ssg-generate.log 2>&1`
 
 ### Settings
