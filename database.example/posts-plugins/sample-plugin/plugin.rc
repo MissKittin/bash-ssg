@@ -1,4 +1,4 @@
-# sample plugin displayed under post
+# sample plugin displayed under each post
 
 # create post_id variable
 post_id="${post##*/}"; post_id="${post_id#*_}"; post_id="${post_id%_*}"

@@ -101,7 +101,7 @@ If this is a post page, the `template__no_title_link` variable is `true`.
 If this is a post list page, the `posts__counted_pages` and `current_page_number` variables are not empty and contains an integer (`posts-pages.rc`).  
 The `posts-content.rc` file must implement the `posts__posts_arch_integration` and `posts__posts_tags_integration` settings.  
 The `posts-content.rc` file must contain a `. "${post}/content.rc"` statement.  
-The `posts-content.rc` file must implement `if "${template__no_title_link}"; then for post_plugin in ${SSG__database}/posts-plugins/*/plugin.rc; do`
+The `posts-content.rc` file must implement `if "${template__no_title_link}"; then for post_plugin in ${SSG__database}/${posts__plugins_dbdir}/*/plugin.rc; do`
 The `posts-pages.rc` file must implement the `posts__no_first_page_mode` setting.  
 The template must provide a way to override the default post box HTML via a `${post}/template-post-box.rc` file.  
 The template must provide a way to override the default HTML of the post plugin box via a `${post}/template-plugin-box.rc` file.

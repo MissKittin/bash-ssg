@@ -5,6 +5,8 @@ __module_name__='posts'
 
 # defaults variables
 	posts__dbdir='posts'
+	posts__plugins_dbdir='posts-plugins'
+
 	. "${0%/*}/defaults.rc.d/posts.rc"
 
 # variables

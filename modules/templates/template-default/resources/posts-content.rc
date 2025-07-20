@@ -56,8 +56,8 @@ fi
 
 # plugin boxes (only on post view)
 if "${template__no_title_link}"; then
-	for post_plugin in ${SSG__database}/posts-plugins/*/plugin.rc; do
-		[ "${post_plugin}" = "${SSG__database}/posts-plugins/*/plugin.rc" ] && break
+	for post_plugin in ${SSG__database}/${posts__plugins_dbdir}/*/plugin.rc; do
+		[ "${post_plugin}" = "${SSG__database}/${posts__plugins_dbdir}/*/plugin.rc" ] && break
 		[ -e "${post_plugin%/*}/plugin-disabled" ] && continue
 
 		if [ -e "${post}/template-plugin-box.rc" ]; then
