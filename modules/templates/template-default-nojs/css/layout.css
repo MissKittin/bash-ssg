@@ -1,0 +1,44 @@
+/* default template nojs - layout */
+body {
+	margin: 0;
+	padding: 0;
+}
+a,
+a:hover,
+a:visited {
+	text-decoration: none;
+}
+#page-main-box {
+	overflow: auto;
+	display: flex; /* patch */
+	margin: 5px; /* patch */
+}
+#page-content h1 {
+	display: inline-block;
+}
+
+#header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#headlinks { /* patch */
+	float: left;
+	margin: 5px;
+	padding-right: 5px;
+	width: auto;
+	text-align: center;
+	text-wrap: nowrap;
+}
+.headlink::after {
+	content: '\A';
+	white-space: pre;
+}
+
+#page-content {
+	overflow: auto;
+	overflow-wrap: break-word;
+	margin-left: 0; /* patch */
+	width: 100%; /* patch */
+}

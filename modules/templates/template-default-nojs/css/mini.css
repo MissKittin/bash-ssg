@@ -1,0 +1,22 @@
+/* default template nojs - mini version */
+@media only screen and (max-width: 700px) {
+	#page-main-box {
+		display: block;
+		margin-left: 10px;
+	}
+
+	#headlinks { /* patch */
+		float: none;
+		margin: 0;
+		text-wrap: wrap;
+	}
+	.headlink::before,
+	.headlink::after {
+		content: "\2022 ";
+	}
+
+	#page-content { /* patch */
+		border: 0;
+		width: auto; /* patch */
+	}
+}
