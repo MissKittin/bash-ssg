@@ -7,7 +7,7 @@ __module_name__='pages'
 	pages__dbdir='pages'
 	. "${0%/*}/defaults.rc.d/pages.rc"
 
-# variables'
+# variables
 	. "${SSG__lib}/import-includes.rc"
 	. "${SSG__lib}/import-defaults.rc"
 

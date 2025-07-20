@@ -3,7 +3,11 @@
 [ ! "${@}" = '' ] && exit 1
 __module_name__='static'
 
-static__dbdir='static'
+# defaults variables
+	static__dbdir='static'
+
+# variables
+	. "${SSG__lib}/import-defaults.rc"
 
 if [ -e "${SSG__database}/${static__dbdir}" ]; then
 		echo 'Copying static files'
