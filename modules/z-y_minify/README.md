@@ -4,8 +4,9 @@ Module for minifying pages and assets.
 ### Functions
 If you need to use functions from this module, they are defined in the `functions.rc`.  
 As an argument you can specify the type of files you are looking for (e.g. `*.xml`):
-* `minify_html [*.ext]`  
-	HTML/XML minifier
+* `minify_html [*.ext] [true]`  
+	HTML/XML minifier  
+	**Hint:** if the second argument is `true`, HTML comments will be removed
 * `minify_css [*.ext]`  
 	CSS minifier
 * `minify_js [*.ext]`  

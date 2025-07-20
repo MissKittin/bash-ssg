@@ -21,9 +21,11 @@ __module_name__='z-y_minify'
 # minify html
 	if "${minify__process_html}"; then
 		if "${minify__parallel_rendering}"; then
-			minify_html &
+			minify_html '*.html' "${minify__process_html_comments}" &
+			minify_html '*.htm' "${minify__process_html_comments}" &
 		else
-			minify_html
+			minify_html '*.html' "${minify__process_html_comments}"
+			minify_html '*.htm' "${minify__process_html_comments}"
 		fi
 	else
 		echo 'HTML minification is disabled in settings'
