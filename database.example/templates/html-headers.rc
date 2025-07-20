@@ -5,6 +5,7 @@ cat << EOF
 EOF
 
 # you can implement CSP here, but it won't be easy
+# consider patching the template (database/templates/template-name.patches/parts/top.rc)
 #cat << EOF
 #	<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 #EOF

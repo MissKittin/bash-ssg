@@ -10,6 +10,9 @@ unset 'posts__post_id'
 posts__post_title='Sample hidden post'
 posts__post_date='21.12.2020' # remove if you read date from arch_* filename
 
+# disable post plugins
+#posts__post_plugins='false'
+
 # hide div post-title
 #template__html_title="${posts__post_title} - ${template__site_title}"
 #posts__post_title=''

@@ -44,6 +44,9 @@ cat << EOF
 	</div>
 EOF
 
+# add plugins under the content box
+. "${entrypoint%/*}/plugins.rc"
+
 # add bottom template
 templates__current_get_part 'bottom'
 

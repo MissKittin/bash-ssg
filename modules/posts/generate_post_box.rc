@@ -5,6 +5,7 @@ generate_post_box()
 	local posts__post_date
 	local posts__post_id
 	local posts__post_tags
+	local posts__post_plugins='true'
 
 	[ ! "${1}" = 'no_title_link' ] && template__no_title_link='false'
 

@@ -1,0 +1,19 @@
+# code for adding plugins under the content box
+# this is a modified template code from the resources/posts-content.rc
+
+post='public_0123456_sample-multipage-post' # edit this
+posts__generated_post_directory="${pages__generated_directory}" # spoof path
+[ "${posts__plugins_dbdir}" = '' ] && posts__plugins_dbdir='posts-plugins'
+
+echo '<br>'
+
+for post_plugin in ${SSG__database}/${posts__plugins_dbdir}/*/plugin.rc; do
+	[ "${post_plugin}" = "${SSG__database}/${posts__plugins_dbdir}/*/plugin.rc" ] && break
+	[ -e "${post_plugin%/*}/plugin-disabled" ] && continue
+
+	echo '<div class="post post-plugin">'
+		. "${post_plugin}"
+	echo '</div>'
+done
+
+unset 'post_plugin'

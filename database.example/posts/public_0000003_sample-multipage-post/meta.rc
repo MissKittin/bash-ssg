@@ -13,6 +13,9 @@ posts__post_id="${post##*/}"; posts__post_id="${posts__post_id#*_}"; posts__post
 posts__post_title="Sample multipage post"
 posts__post_date='21.12.2020' # remove if you read date from arch_* filename
 
+# disable post plugins
+posts__post_plugins='false'
+
 # redirect link address to page
 template__no_title_link='true'
 posts__post_html_alt_title="${posts__post_title}" # for posts__post_html_title function in defaults.rc.d/posts.rc
