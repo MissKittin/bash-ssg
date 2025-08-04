@@ -24,28 +24,8 @@ __module_name__='posts'
 
 # functions
 	. "${0%/*}/generate_post_box.rc"
-	posts__copy_file()
-	{
-		if [ ! -e "${post}/${1}" ]; then
-			echo "  File ${post}/${1} not exists" >&2
-			return
-		fi
-
-		if [ -e "${rendered_post_dir}/${2}" ]; then
-			echo "  File ${2} already exists in ${rendered_post_dir}" >&2
-			return
-		fi
-
-		if [ -f "${post}/${1}" ]; then
-			echo " Copying file '${1}' to '${2}'" >&2
-		elif [ -d "${post}/${1}" ]; then
-			echo " Copying directory '${1}' to '${2}'" >&2
-		else
-			echo " Copying '${1}' to '${2}'" >&2
-		fi
-
-		cp -r "${post}/${1}" "${rendered_post_dir}/${2}"
-	}
+	. "${0%/*}/generate_for_post.rc"
+	. "${0%/*}/posts__copy_file.rc"
 
 # database preprocessing - count pages
 	posts__counted_posts='1'
@@ -67,31 +47,6 @@ __module_name__='posts'
 	unset 'posts__counted_posts'
 
 # database processing
-	generate_for_post()
-	{
-		local post_name="${post##*/}"
-		echo "Generating ${1} post ${post_name##*_}"
-		unset 'post_name'
-
-		# cache
-		local rendered_post_dir="${post##*/}"
-		rendered_post_dir="${rendered_post_dir##*_}"
-		rendered_post_dir="${SSG__generated}/${posts__generated_post_directory}${rendered_post_dir}"
-
-		[ ! -e "${rendered_post_dir}" ] && mkdir -p "${rendered_post_dir}"
-
-		. "${post}/meta.rc"
-		posts__post_html_title
-
-		posts__post_header_content > "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-
-		generate_post_box 'no_title_link' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-
-		templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-		posts__post_footer_content >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
-	}
-
 	for post in ${SSG__database}/${posts__dbdir}/public_*; do
 		if [ "${post}" = "${SSG__database}/${posts__dbdir}/public_*" ]; then
 			echo 'No published posts found in database'

@@ -41,6 +41,8 @@ If there is an empty `plugin-disabled` file in the plugin directory, the plugin 
 * `posts__copy_file path/to/input-file-or-dir path/to/output-file-or-dir`  
 	Copies the `database/posts/POST-DIR/path/to/input-file-or-dir` file or directory  
 	to the `generated/post/POST-URL/path/to/output-file-or-dir`
+* `generate_for_post published|hidden` (for devs only)  
+	Shared function located in `generate_for_post.rc`
 * `generate_post_box [no_title_link]` (for devs only)  
 	Shared function located in `generate_post_box.rc`
 

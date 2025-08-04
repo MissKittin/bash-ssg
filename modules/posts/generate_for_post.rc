@@ -1,0 +1,24 @@
+generate_for_post()
+{
+	local post_name="${post##*/}"
+	echo "Generating ${1} post ${post_name##*_}"
+	unset 'post_name'
+
+	# cache
+	local rendered_post_dir="${post##*/}"
+	rendered_post_dir="${rendered_post_dir##*_}"
+	rendered_post_dir="${SSG__generated}/${posts__generated_post_directory}${rendered_post_dir}"
+
+	[ ! -e "${rendered_post_dir}" ] && mkdir -p "${rendered_post_dir}"
+
+	. "${post}/meta.rc"
+	posts__post_html_title
+
+	posts__post_header_content > "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+	templates__current_get_part 'top' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+	generate_post_box 'no_title_link' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+
+	templates__current_get_part 'bottom' >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+	posts__post_footer_content >> "${rendered_post_dir}/${defaults__default_file_name}${defaults__default_file_extension}"
+}

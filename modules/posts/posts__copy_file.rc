@@ -1,0 +1,22 @@
+posts__copy_file()
+{
+	if [ ! -e "${post}/${1}" ]; then
+		echo "  File ${post}/${1} not exists" >&2
+		return
+	fi
+
+	if [ -e "${rendered_post_dir}/${2}" ]; then
+		echo "  File ${2} already exists in ${rendered_post_dir}" >&2
+		return
+	fi
+
+	if [ -f "${post}/${1}" ]; then
+		echo " Copying file '${1}' to '${2}'" >&2
+	elif [ -d "${post}/${1}" ]; then
+		echo " Copying directory '${1}' to '${2}'" >&2
+	else
+		echo " Copying '${1}' to '${2}'" >&2
+	fi
+
+	cp -r "${post}/${1}" "${rendered_post_dir}/${2}"
+}
