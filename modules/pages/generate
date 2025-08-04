@@ -17,54 +17,8 @@ __module_name__='pages'
 		exit 1
 
 # functions
-	pages__render_script()
-	{
-		local script="${entrypoint%/*}/${1}"
-		local script_path="$(echo -n "${script}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
-
-		local rendered_script_path_subpath="${3}"
-		[ ! "${rendered_script_path_subpath}" = '' ] && \
-			rendered_script_path_subpath="/${rendered_script_path_subpath}"
-
-		local rendered_script_path="${SSG__generated}/${pages__generated_directory}${script_path%/*}${rendered_script_path_subpath}"
-
-		[ -e "${rendered_script_path}" ] && \
-			echo "error: directory conflict on ${pages__generated_directory}${script_path%/*}"
-
-		echo " Generating script ${script_path}"
-
-		[ ! -e "${rendered_script_path}" ] && \
-			mkdir -p "${rendered_script_path}"
-
-		. "${script}" >> "${rendered_script_path}/${2}"
-	}
-	pages__copy_file()
-	{
-		local script_location="${entrypoint%/*}"
-
-		if [ "${rendered_script_path}" = '' ]; then
-			local script_path="$(echo -n "${entrypoint%/*}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
-			local rendered_script_path="${SSG__generated}/${pages__generated_directory}${script_path%/*}"
-		fi
-
-		if [ ! -e "${script_location}/${1}" ]; then
-			echo "   File ${script_location}/${1} not exists" >&2
-			return
-		fi
-
-		if [ -f "${script_location}/${1}" ]; then
-			echo "  Copying file '${1}' to '${2}'" >&2
-		elif [ -d "${script_location}/${1}" ]; then
-			echo "  Copying directory '${1}' to '${2}'" >&2
-		else
-			echo "  Copying '${1}' to '${2}'" >&2
-		fi
-
-		[ ! -e "${rendered_script_path}" ] && \
-			mkdir "${rendered_script_path}"
-
-		cp -r "${script_location}/${1}" "${rendered_script_path}/${2}"
-	}
+	. "${0%/*}/pages__render_script.rc"
+	. "${0%/*}/pages__copy_file.rc"
 
 # database processing
 	for page in ${SSG__database}/${pages__dbdir}/*; do

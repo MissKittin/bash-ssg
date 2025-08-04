@@ -1,0 +1,21 @@
+pages__render_script()
+{
+	local script="${entrypoint%/*}/${1}"
+	local script_path="$(echo -n "${script}" | sed 's|'"${SSG__database}/${pages__dbdir}/"'||g')"
+
+	local rendered_script_path_subpath="${3}"
+	[ ! "${rendered_script_path_subpath}" = '' ] && \
+		rendered_script_path_subpath="/${rendered_script_path_subpath}"
+
+	local rendered_script_path="${SSG__generated}/${pages__generated_directory}${script_path%/*}${rendered_script_path_subpath}"
+
+	[ -e "${rendered_script_path}" ] && \
+		echo "error: directory conflict on ${pages__generated_directory}${script_path%/*}"
+
+	echo " Generating script ${script_path}"
+
+	[ ! -e "${rendered_script_path}" ] && \
+		mkdir -p "${rendered_script_path}"
+
+	. "${script}" >> "${rendered_script_path}/${2}"
+}
