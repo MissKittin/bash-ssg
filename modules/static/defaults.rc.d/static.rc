@@ -1,0 +1,2 @@
+# static module configuration
+static__cp_params='-rfp' # cp ${static__cp_params} src dest

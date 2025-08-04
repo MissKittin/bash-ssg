@@ -5,6 +5,7 @@ __module_name__='static'
 
 # defaults variables
 	static__dbdir='static'
+	. "${0%/*}/defaults.rc.d/static.rc"
 
 # variables
 	. "${SSG__lib}/import-defaults.rc"
@@ -13,14 +14,14 @@ if [ -e "${SSG__database}/${static__dbdir}" ]; then
 		echo 'Copying static files'
 
 		[ ! -e "${SSG__generated}" ] && mkdir -p "${SSG__generated}"
-		cp -rfp ${SSG__database}/${static__dbdir}/* "${SSG__generated}"
+		cp ${static__cp_params} ${SSG__database}/${static__dbdir}/* "${SSG__generated}"
 
 		for hiddenfile in ${SSG__database}/${static__dbdir}/.*; do
 			if [ "${hiddenfile}" = "${SSG__database}/${static__dbdir}/." ] || [ "${hiddenfile}" = "${SSG__database}/${static__dbdir}/.." ]; then
 				continue
 			fi
 
-			cp -rfp "${hiddenfile}" "${SSG__generated}"
+			cp ${static__cp_params} "${hiddenfile}" "${SSG__generated}"
 		done
 else
 	echo 'Error: "'"${static__dbdir}"'" directory not found in database'
