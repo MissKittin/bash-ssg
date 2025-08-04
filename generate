@@ -1,21 +1,20 @@
 #!/usr/bin/env sh
 # Bash Static Site Generator - entry point
-# Required tools for entrypoint: cat date dirname readlink tr sort mv rm
+# Required tools for entrypoint: readlink cat tr sort mv rm
+# Suggested tools for entrypoint: date
 
 echo ' :: Checking required tools'
-	for tool in 'dirname' 'readlink'; do
-		echo -n "Checking '${tool}'"
+	echo -n "Checking 'readlink'"
 
-		if ! command -v "${tool}" > /dev/null 2>&1; then
-			echo ' [FAIL]'
-			exit 1
-		fi
+	if ! command -v 'readlink' > '/dev/null' 2>&1; then
+		echo ' [FAIL]'
+		exit 1
+	fi
 
-		echo ' [ OK ]'
-	done
+	echo ' [ OK ]'
 
 # global variables (you can rewrite in database/defaults.rc.d)
-	export SSG__root="$(dirname "$(readlink -f "${0}")")"
+	SSG__root="$(readlink -f "${0}")"; export SSG__root="${SSG__root%/*}"
 	export SSG__modules="${SSG__root}/modules"
 	export SSG__database="${SSG__root}/database"
 	export SSG__user_modules="${SSG__database}/modules"
@@ -24,11 +23,13 @@ echo ' :: Checking required tools'
 	[ -d "${SSG__root}/bin" ] && \
 		export PATH="${SSG__root}/bin:${PATH}"
 
+[ -e "${SSG__lib}/generator-init.rc" ] && . "${SSG__lib}/generator-init.rc"
+
 # check entrypoint tools
-	for tool in 'cat' 'date' 'tr' 'sort' 'mv' 'rm'; do
+	for tool in 'cat' 'tr' 'sort' 'mv' 'rm'; do
 		echo -n "Checking '${tool}'"
 
-		if ! command -v "${tool}" > /dev/null 2>&1; then
+		if ! command -v "${tool}" > '/dev/null' 2>&1; then
 			echo ' [FAIL]'
 			exit 1
 		fi
@@ -58,7 +59,7 @@ echo ' :: Checking required tools'
 	}
 
 # database check
-	if [ ! -e "${SSG__database}" ]; then
+	if [ ! -d "${SSG__database}" ]; then
 		echo "error: '${SSG__database}' directory does not exist"
 		exit 1
 	fi
@@ -86,7 +87,7 @@ echo ' :: Checking required tools'
 			for tool in ${module_required_tools}; do
 				echo -n "Checking '${tool}'"
 
-				if ! command -v "${tool}" > /dev/null 2>&1; then
+				if ! command -v "${tool}" > '/dev/null' 2>&1; then
 					echo ' [FAIL]'
 
 					echo -n 'Continue anyway? (y/[N]) '
@@ -149,10 +150,16 @@ fi
 # output directory
 	[ -e "${SSG__generated}" ] && if "${defaults__archive_old_generated}"; then
 		echo ' :: Archiving previously generated files'
+
+		if ! command -v 'date' > '/dev/null' 2>&1; then
+			echo "error: the 'date' tool is unavailable"
+			exit 1
+		fi
+
 		mv "${SSG__generated}" "${SSG__generated}-$(date '+%Y%m%d%H%M%S')"
 	else
 		echo ' :: Removing previously generated files'
-		rm -r ${SSG__generated}/* > /dev/null 2>&1
+		rm -r ${SSG__generated}/* > '/dev/null' 2>&1
 	fi
 
 # modules generators

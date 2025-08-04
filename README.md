@@ -2,19 +2,6 @@
 The modular static site generator written in bash (also works with dash and BusyBox ash).  
 Reads files from the `database` directory and renders to the `generated` directory.
 
-### Running on Windows
-You need to find a BusyBox binary compiled for Windows.  
-You can find it e.g. [here](https://frippery.org/busybox/index.html).  
-Create a `bin` directory and put the `busybox.exe` in it.  
-Follow the instructions below, and then instead of the last step, execute in the command line:
-```
-bin\busybox.exe sh generate
-```
-By the way, you can check the results of your work by issuing a command:
-```
-bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
-```
-
 ### How to use
 1. rename the `database.example` directory to `database` and open it
 2. create first page:
@@ -55,7 +42,8 @@ bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
 The main `generate` script defines global variables for all modules - if you need, copy this block, paste to the `database/defaults.rc.d/defaults.rc` and edit. You can change shebang in this file.  
 Modules reads the default settings from `modules/*/defaults.rc.d` - do not edit these files. Just copy the chosen config file to the `database/defaults.rc.d` and edit - files from the `database` directory has higher priority than configs from `modules`.  
 The main settings are defined in `database/defaults.rc.d/defaults.rc` - do not delete this file.  
-You can create `bin` directory and put binaries or links in it (see main `generate` script).
+You can create `bin` directory and put binaries or links in it (see main `generate` script).  
+If you need to execute code early, save it in an `lib/generator-init.rc` - this file is included right after the generator's basic variables are set.
 
 ### Server-side rendering
 You can combine static pages with a programming language that can be embedded in HTML (e.g. PHP).  
@@ -98,6 +86,18 @@ defaults__url_prefix="<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').
 		**warning:** never include `import-includes.rc` and `import-defaults.rc` in `include.rc`
 	* put the names of the used utils (eg. sed or mkdir) in the `command-stack` - this file will be checked by the main `generate` script
 4. you can create `defaults.rc.d/your-module-name.rc` with module configuration (this file will not be imported automatically)
+
+### Running on Windows
+You need to find a BusyBox binary compiled for Windows. You can find it e.g. [here](https://frippery.org/busybox/index.html).  
+Create a `bin` directory and put the `busybox.exe` in it.  
+Follow the instructions below, and then instead of the last step, execute in the command line:
+```
+bin\busybox.exe sh generate
+```
+By the way, you can check the results of your work by issuing a command:
+```
+bin\busybox.exe httpd -f -vv -p 127.0.0.1:8080 -h generated
+```
 
 ### Performance
 There isn't. Test it - maybe it will be fast enough for you.
