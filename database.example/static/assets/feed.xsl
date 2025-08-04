@@ -7,15 +7,26 @@
 			document.addEventListener('DOMContentLoaded', function(){
 				var dates=document.getElementsByClassName('post-date');
 				var posts=document.getElementsByClassName('post-content');
-				var i;
-				var date, dateMonth;
+				var i, date, dateMonth;
 
 				for(i=0; i<dates.length; i++)
 				{
-					date=new Date(Date.parse(dates[i].innerHTML));
+					date=new Date(Date.parse(
+						dates[i].innerHTML
+					));
+					dateDay=date.getDate();
 					dateMonth=date.getMonth()+1;
 
-					dates[i].innerHTML=date.getDate()+'.'+dateMonth+'.'+date.getFullYear();
+					if(dateDay < 10)
+						dateDay='0'+dateDay;
+
+					if(dateMonth < 10)
+						dateMonth='0'+dateMonth;
+
+					dates[i].innerHTML=''
+					+	dateDay+'.'
+					+	dateMonth+'.'
+					+	date.getFullYear();
 				}
 
 				for(i=0; i<posts.length; i++)

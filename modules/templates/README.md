@@ -40,7 +40,7 @@ Sample template settings are in the `defaults.rc.d/a_template.rc`:
 ### API
 Standard API is provided by template:
 * `top`  
-	Top of page (HTML headers and opening `<body>` tag) 
+	Top of page (HTML headers and opening `<body>` tag)  
 	`templates__current_get_part 'top' >> './output-file.html'`
 * `resource res-name`  
 	Templates for dependent modules  

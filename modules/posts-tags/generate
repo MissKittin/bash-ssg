@@ -5,6 +5,7 @@ __module_name__='posts-tags'
 
 # defaults variables
 	posts__dbdir='posts'
+
 	. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
 	. "${0%/*}/defaults.rc.d/posts-tags.rc"
 
@@ -12,6 +13,7 @@ __module_name__='posts-tags'
 	posts__tag_list='' # all tags list
 	. "${SSG__lib}/import-includes.rc"
 	. "${SSG__lib}/import-defaults.rc"
+
 	[ "${posts_tags__generated_directory}" = '' ] && posts_tags__generated_directory='tag'
 
 # directory in database

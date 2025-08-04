@@ -3,6 +3,7 @@
 ### Fixed
 
 - Added missing `unset 'posts__post_id'` and fixed busybox `posts_rss__post_pubdate` in posts `meta.rc`
+- Fixed wrong date in `feed.xsl`
 - Fixed a bug with the menu bar overlapping the footer (`css`) in `template-default-nojs`
 
 ### Changed
