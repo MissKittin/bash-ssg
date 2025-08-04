@@ -5,12 +5,14 @@ __module_name__='posts-arch'
 
 # defaults variables
 	posts__dbdir='posts'
+
 	. "${SSG__modules}/posts/defaults.rc.d/posts.rc"
 	. "${0%/*}/defaults.rc.d/posts-arch.rc"
 
 # variables
 	. "${SSG__lib}/import-includes.rc"
 	. "${SSG__lib}/import-defaults.rc"
+
 	[ "${posts_arch__generated_directory}" = '' ] && posts_arch__generated_directory='arch'
 
 # functions
@@ -87,7 +89,7 @@ __module_name__='posts-arch'
 
 				if [ ! "${current_page_number}" = '1' ] && [ "${current_post_number}" = '1' ]; then
 					rendered_page_dir_number="/${current_page_number}"
-					mkdir "${rendered_page_dir}${rendered_page_dir_number}"
+					[ ! -e "${rendered_page_dir}${rendered_page_dir_number}" ] && mkdir "${rendered_page_dir}${rendered_page_dir_number}"
 				fi
 
 				if [ "${current_post_number}" = '1' ]; then
@@ -138,7 +140,7 @@ __module_name__='posts-arch'
 			echo "Processing date ${date}"
 
 			rendered_page_dir="${SSG__generated}/${posts_arch__generated_directory}/${date}"
-			mkdir "${rendered_page_dir}"
+			[ ! -e "${rendered_page_dir}" ] && mkdir "${rendered_page_dir}"
 
 			posts_arch__counted_posts='0'
 			posts_arch__counted_posts_find="$(find ${SSG__database}/${posts__dbdir}/public_* -type f -path "*/arch_${date}" | tac)" # cache
