@@ -6,6 +6,7 @@
 - Fixed wrong date in `feed.xsl`
 - Fixed a bug with the menu bar overlapping the footer (`css`) in `template-default-nojs`
 - Fixed HTML comment removal in `minify` module
+- Fixed `include.rc` handling in user modules in `import-includes.rc`
 
 ### Changed
 

@@ -1,0 +1,18 @@
+# import shared resources from modules
+
+for __ssg_base_include_module__ in ${SSG__modules}/*/include.rc ${SSG__user_modules}/*/include.rc; do
+	[ "${__ssg_base_include_module__}" = "${SSG__modules}/*/include.rc" ] && continue
+	[ "${__ssg_base_include_module__}" = "${SSG__user_modules}/*/include.rc" ] && break
+
+	. "${__ssg_base_include_module__}"
+
+	__ssg_base_include_module_defaults__="${__ssg_base_include_module__%/*}"
+
+	for __ssg_base_include_module__ in ${__ssg_base_include_module_defaults__}/defaults.rc.d/*.rc; do
+		[ "${__ssg_base_include_module__}" = "${__ssg_base_include_module_defaults__}/defaults.rc.d/*.rc" ] && break
+		. "${__ssg_base_include_module__}"
+	done
+done
+
+unset '__ssg_base_include_module__'
+unset '__ssg_base_include_module_defaults__'

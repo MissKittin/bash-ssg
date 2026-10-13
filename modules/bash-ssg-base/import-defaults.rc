@@ -1,0 +1,10 @@
+# import all settings from database
+
+if [ -e "${SSG__database}/defaults.rc.d" ]; then
+	for __ssg_base_include_defaults__ in ${SSG__database}/defaults.rc.d/*.rc; do
+		[ "${__ssg_base_include_defaults__}" = "${SSG__database}/defaults.rc.d/*.rc" ] && break
+		. "${__ssg_base_include_defaults__}"
+	done
+
+	unset '__ssg_base_include_defaults__'
+fi

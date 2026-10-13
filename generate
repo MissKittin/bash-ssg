@@ -19,11 +19,18 @@ echo ' :: Checking required tools'
 	export SSG__database="${SSG__root}/database"
 	export SSG__user_modules="${SSG__database}/modules"
 	export SSG__generated="${SSG__root}/generated"
-	export SSG__lib="${SSG__root}/lib"
+	export SSG__lib="${SSG__modules}/bash-ssg-base"
 	[ -d "${SSG__root}/bin" ] && \
 		export PATH="${SSG__root}/bin:${PATH}"
 
-[ -e "${SSG__lib}/generator-init.rc" ] && . "${SSG__lib}/generator-init.rc"
+[ -e "${SSG__root}/generator-init.rc" ] && . "${SSG__root}/generator-init.rc"
+[ -e "${SSG__database}/generate-hooks/generator-init.rc" ] && . "${SSG__database}/generate-hooks/generator-init.rc"
+
+# check bash-ssg-base module
+	if [ ! -d "${SSG__lib}" ]; then
+		echo "error: '${SSG__lib}' directory does not exist"
+		exit 1
+	fi
 
 # check entrypoint tools
 	for tool in 'cat' 'tr' 'sort' 'mv' 'rm'; do
@@ -52,10 +59,10 @@ echo ' :: Checking required tools'
 		local module
 
 		for module in ${2}; do
-			[ "${1}" = "${module}" ] && return '1'
+			[ "${1}" = "${module}" ] && return 1
 		done
 
-		return '0'
+		return 0
 	}
 
 # database check

@@ -43,7 +43,7 @@ The main `generate` script defines global variables for all modules - if you nee
 Modules reads the default settings from `modules/*/defaults.rc.d` - do not edit these files. Just copy the chosen config file to the `database/defaults.rc.d` and edit - files from the `database` directory has higher priority than configs from `modules`.  
 The main settings are defined in `database/defaults.rc.d/defaults.rc` - do not delete this file.  
 You can create `bin` directory and put binaries or links in it (see main `generate` script).  
-If you need to execute code early, save it in an `lib/generator-init.rc` - this file is included right after the generator's basic variables are set.  
+If you need to execute code early, save it in an `generator-init.rc` or `database/generate-hooks/generator-init.rc` - these files are included right after the generator's basic variables are set.  
 You can also execute the code directly before and after running individual modules - add your code to the `pre-module_${module_name}.rc` and `post-module_${module_name}.rc` files in the `database/generate-hooks` directory.  
 **Note:** in the `post-module_${module_name}.rc` script, you can use the `${module_exit_code}`.
 
@@ -59,6 +59,9 @@ defaults__url_prefix="<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').
 ```
 
 ### Basic modules
+* `bash-ssg-base` - core generator libraries
+	* `import-defaults.rc` - imports all variables from `database/defaults.rc.d/*.rc`
+	* `import-includes.rc` - imports all functions from `modules/*/include.rc` and `database/modules/*/include.rc`
 * `templates`
 	* `template-default`
 	* `template-default-nojs`
@@ -74,19 +77,16 @@ defaults__url_prefix="<?php echo (empty(\$_SERVER['HTTPS']) ? 'http' : 'https').
 * `minify` - `css`, `js` and `html` minifier
 * `gzip` - compresses all generated `css`, `js`, `html` and `xml` files
 
-### Libraries
-* `import-defaults.rc` - imports all variables from `database/defaults.rc.d`
-* `import-includes.rc` - imports all functions from `modules/*/include.rc`
-
 ### How to create module
 1. open `modules` directory or create one in the `database` directory
 2. create a directory with the module name
 3. create a `generate` or `include.rc` file
 	* the `generate` file is executed by main `generate` script (must be executable)  
-		**warning:** include library `import-includes.rc` before `import-defaults.rc`
-	* `include.rc` is imported by `lib/import-includes.rc` - put functions that will be used by other modules  
+		**warning:** include the library `import-includes.rc` (from the `bash-ssg-base` module) before `import-defaults.rc`
+	* `include.rc` is imported by `modules/bash-ssg-base/import-includes.rc` - put functions that will be used by other modules  
 		**warning:** never include `import-includes.rc` and `import-defaults.rc` in `include.rc`
-	* put the names of the used utils (eg. sed or mkdir) in the `command-stack` - this file will be checked by the main `generate` script
+	* the libraries listed above are available via the `${SSG__lib}` - use e.g. `. "${SSG__lib}/import-includes.rc"`
+	* put the names of the used utils (eg. `sed` or `mkdir`) in the `command-stack` (one line - one tool name) - this file will be checked by the main `generate` script
 4. you can create `defaults.rc.d/your-module-name.rc` with module configuration (this file will not be imported automatically)
 
 ### Running on Windows
