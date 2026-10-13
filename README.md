@@ -43,7 +43,9 @@ The main `generate` script defines global variables for all modules - if you nee
 Modules reads the default settings from `modules/*/defaults.rc.d` - do not edit these files. Just copy the chosen config file to the `database/defaults.rc.d` and edit - files from the `database` directory has higher priority than configs from `modules`.  
 The main settings are defined in `database/defaults.rc.d/defaults.rc` - do not delete this file.  
 You can create `bin` directory and put binaries or links in it (see main `generate` script).  
-If you need to execute code early, save it in an `lib/generator-init.rc` - this file is included right after the generator's basic variables are set.
+If you need to execute code early, save it in an `lib/generator-init.rc` - this file is included right after the generator's basic variables are set.  
+You can also execute the code directly before and after running individual modules - add your code to the `pre-module_${module_name}.rc` and `post-module_${module_name}.rc` files in the `database/generate-hooks` directory.  
+**Note:** in the `post-module_${module_name}.rc` script, you can use the `${module_exit_code}`.
 
 ### Server-side rendering
 You can combine static pages with a programming language that can be embedded in HTML (e.g. PHP).  

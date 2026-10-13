@@ -168,18 +168,30 @@ fi
 		[ ! -x "${module}/generate" ] && continue
 
 		module_name="${module##*/}"
+		module_exit_code=''
 
 		if ! check_disabled_modules "${module_name}" "${defaults__disabled_modules}"; then
-			echo " :: ${module_name} module is disabled"
+			echo " !! ${module_name} module is disabled"
 			continue
 		fi
 
-		echo " :: Running ${module_name} module"
-		"${module}/generate"
+		if [ -e "${SSG__database}/generate-hooks/pre-module_${module_name}.rc" ]; then
+			echo " :: Starting ${module_name} pre-generate hook"
+			. "${SSG__database}/generate-hooks/pre-module_${module_name}.rc"
+		fi
 
-		[ "$?" = '0' ] && \
-			echo " :: ${module_name} module ended" || \
-			echo " :: ${module_name} module failed"
+		echo " :: Starting ${module_name} module"
+		"${module}/generate"
+		module_exit_code="$?"
+
+		if [ -e "${SSG__database}/generate-hooks/post-module_${module_name}.rc" ]; then
+			echo " :: Starting ${module_name} post-generate hook"
+			. "${SSG__database}/generate-hooks/post-module_${module_name}.rc"
+		fi
+
+		[ "${module_exit_code}" = '0' ] && \
+			echo " :: ${module_name} module finished" || \
+			echo " !! ${module_name} module failed"
 
 		if [ -e "${SSG__generated}/.reimport-defaults" ]; then
 			echo ' :: Re-importing defaults variables'
