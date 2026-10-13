@@ -16,6 +16,7 @@
 - Moved functions to a separate file, added minification of `.htm` files in the `minify` module
 - Moved main function to a separate file, added `gzip__process_files` option in the `gzip` module
 - Added option to change `cp` arguments in `static` module
+- Added template settings
 
 ### Removed
 

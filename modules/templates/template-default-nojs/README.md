@@ -12,6 +12,12 @@ or in the `modules/templates/template-default-nojs` directory
 and edit the appropriate configuration file in `database/defaults.rc.d` to activate this template.  
 **Warning:** the `template-default` must be installed in the same directory (`database/templates/template-default` or `modules/templates/template-default-nojs`).
 
+### Settings
+If you want to change any template setting, add lines e.g. `__template_name_css__='style.css'` in some file in `database/defaults.rc.d` (preferably to `a_templates.rc`, though it doesn't really matter).
+* `__template_name_css__`  
+	name of the output file with the style sheet  
+	default: `template-default-nojs.css`
+
 ### Patching template
 Create `database/templates/template-default-nojs.patches`,  
 place new files in this directory (keep template's directory tree)  

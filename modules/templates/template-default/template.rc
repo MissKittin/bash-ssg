@@ -1,9 +1,12 @@
 # Template metadata
 	__template_name__='template-default'
 	[ ! "${1}" = '' ] && __template_name__="${1}"
+	[ "${__template_name_css__}" = '' ] && __template_name_css__="${__template_name__}.css"
+	[ "${__template_name_js__}" = '' ] && __template_name_js__="${__template_name__}.js"
+	[ "${__template_name_js_defer__}" = '' ] && __template_name_js_defer__='true'
 
 # Copy template to the "generated" directory
-	if [ ! -e "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.css" ]; then
+	if [ ! -e "${SSG__generated}/${template__generated_assets_directory}${__template_name_css__}" ]; then
 		echo "template.rc: Copying '${__template_name__}' template styles" >&2
 
 		[ ! -e "${SSG__generated}/${template__generated_assets_directory}" ] && mkdir -p "${SSG__generated}/${template__generated_assets_directory}"
@@ -12,21 +15,21 @@
 			[ "${style}" = "${template_location}/css/*.css" ] && break
 
 			if [ -e "${SSG__database}/${templates__dbdir}${__template_name__}.patches/css/${style##*/}" ]; then
-				cat "${SSG__database}/${templates__dbdir}${__template_name__}.patches/css/${style##*/}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.css"
+				cat "${SSG__database}/${templates__dbdir}${__template_name__}.patches/css/${style##*/}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_css__}"
 				continue
 			fi
 
-			cat "${style}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.css"
+			cat "${style}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_css__}"
 		done
 
 		for style in ${SSG__database}/${templates__dbdir}${__template_name__}.patches/css/*.css; do
 			[ "${style}" = "${SSG__database}/${templates__dbdir}${__template_name__}.patches/css/*.css" ] && break
 
-			[ ! -e "${template_location}/css/${style##*/}" ] && cat "${style}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.css"
+			[ ! -e "${template_location}/css/${style##*/}" ] && cat "${style}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_css__}"
 		done
 	fi
 
-	if [ ! -e "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.js" ]; then
+	if [ ! -e "${SSG__generated}/${template__generated_assets_directory}${__template_name_js__}" ]; then
 		echo "template.rc: Copying '${__template_name__}' template scripts" >&2
 
 		[ ! -e "${SSG__generated}/${template__generated_assets_directory}" ] && mkdir -p "${SSG__generated}/${template__generated_assets_directory}"
@@ -35,17 +38,17 @@
 			[ "${script}" = "${template_location}/js/*.js" ] && break
 
 			if [ -e "${SSG__database}/${templates__dbdir}${__template_name__}.patches/js/${script##*/}" ]; then
-				cat "${SSG__database}/${templates__dbdir}${__template_name__}.patches/js/${script##*/}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.js"
+				cat "${SSG__database}/${templates__dbdir}${__template_name__}.patches/js/${script##*/}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_js__}"
 				continue
 			fi
 
-			cat "${script}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.js"
+			cat "${script}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_js__}"
 		done
 
 		for script in ${SSG__database}/${templates__dbdir}${__template_name__}.patches/js/*.js; do
 			[ "${script}" = "${SSG__database}/${templates__dbdir}${__template_name__}.patches/js/*.js" ] && break
 
-			[ ! -e "${template_location}/css/${script##*/}" ] && cat "${script}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name__}.js"
+			[ ! -e "${template_location}/css/${script##*/}" ] && cat "${script}" >> "${SSG__generated}/${template__generated_assets_directory}${__template_name_js__}"
 		done
 	fi
 
